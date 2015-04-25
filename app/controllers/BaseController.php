@@ -2,7 +2,7 @@
 
 use LittleNinja\Lib\Auth;
 
-abstract class BaseController
+class BaseController
 {
     protected $layout;
     protected $views_dir;

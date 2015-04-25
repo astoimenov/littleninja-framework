@@ -1,6 +1,6 @@
 <?php namespace LittleNinja\Models;
 
-abstract class BaseModel
+class BaseModel
 {
     protected $table;
     protected $limit;
