@@ -42,10 +42,6 @@ if (!empty($request)) {
     }
 }
 
-var_dump($controller);
-var_dump($action);
-var_dump($param);
-
 $admin_folder = $admin_routing ? 'Admin\\' : '';
 $controller_class = 'LittleNinja\Controllers\\' . $admin_folder . ucfirst($controller) . 'Controller';
 

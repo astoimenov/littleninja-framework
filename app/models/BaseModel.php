@@ -1,5 +1,7 @@
 <?php namespace LittleNinja\Models;
 
+use LittleNinja\Lib\Database;
+
 class BaseModel
 {
     protected $table;
@@ -15,7 +17,7 @@ class BaseModel
         $args = array_merge($defaults, $args);
 
         if (!isset($args['table'])) {
-            dd('Table not defined.');
+            die('Table not defined.');
         }
 
         extract($args);
@@ -80,7 +82,7 @@ class BaseModel
     public function update($element)
     {
         if (!isset($element['id'])) {
-            dd('Wrong model set.');
+            die('Wrong model set.');
         }
 
         $query = "UPDATE {$this->table} SET ";
