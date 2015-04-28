@@ -92,30 +92,37 @@ class Auth
 
         if (empty($email)) {
             $this->errors[] = MESSAGE_EMAIL_EMPTY;
-        } elseif (empty($name)) {
+            $email = null;
+        }
+        if (empty($name)) {
             $this->errors[] = MESSAGE_NAME_EMPTY;
-        } elseif (empty($pass) || empty($pass_repeat)) {
+        }
+        if (empty($pass) || empty($pass_repeat)) {
             $this->errors[] = MESSAGE_PASSWORD_EMPTY;
-        } elseif ($pass !== $pass_repeat) {
+        }
+        if ($pass !== $pass_repeat) {
             $this->errors[] = MESSAGE_PASSWORD_BAD_CONFIRM;
-        } elseif (strlen($pass) < 6) {
+        }
+        if (strlen($pass) < 6) {
             $this->errors[] = MESSAGE_PASSWORD_TOO_SHORT;
-        } elseif (strlen($email) > 255) {
+        }
+        if (strlen($email) > 255) {
             $this->errors[] = MESSAGE_EMAIL_TOO_LONG;
-        } elseif (strlen($name) > 255) {
+        }
+        if (strlen($name) > 255) {
             $this->errors[] = MESSAGE_NAME_BAD_LENGTH;
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->errors[] = MESSAGE_EMAIL_INVALID;
-        } elseif ($this->databaseConnection()) {
+        }
+        if ($this->databaseConnection()) {
             $queryCheckUser = $this->dbConnection->prepare("SELECT email FROM users WHERE email=?");
             $queryCheckUser->bind_param('s', $email);
             $queryCheckUser->execute();
             $result = $queryCheckUser->fetch();
 
             if (count($result) > 0) {
-                for ($i = 0; $i < count($result); $i++) {
-                    $this->errors[] = 'MESSAGE_EMAIL_ALREADY_EXISTS';
-                }
+                $this->errors[] = MESSAGE_EMAIL_ALREADY_EXISTS;
             } else {
                 $passHash = password_hash($pass, PASSWORD_BCRYPT);
 //                $activationHash = sha1(uniqid(mt_rand(), true));
@@ -125,11 +132,22 @@ class Auth
                 $queryInsertUser->execute();
             }
         }
-
-        /*$query = "INSERT INTO users (name, email, pass) VALUES (?,?,?)";
+        /*$dbObject = Database::getInstance();
+        $db = $dbObject->getDb();
+        $query = "INSERT INTO users (name, email, pass) VALUES (?,?,?)";
         if ($statement = $db->prepare($query)) {
-            $statement->bind_param('sss', $name, $email, password_hash($password, PASSWORD_BCRYPT));
-            $statement->execute();
+            $validator = new Validator();
+            $validator->addValidation($name, 'req', 'Please fill name');
+            $validator->addValidation($email, 'req', 'Please fill email');
+            if ($validator->validateForm()) {
+                $statement->bind_param('sss', $name, $email, password_hash($pass, PASSWORD_BCRYPT));
+                $statement->execute();
+            } else {
+                $error_hash = $validator->getErrors();
+//                foreach ($error_hash as $inp_err) {
+                    $this->errors[] = $error_hash;
+//                }
+            }
         } else {
             var_dump($db->error);
         }*/

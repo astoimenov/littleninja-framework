@@ -1,10 +1,10 @@
 <?php
 
-use LittleNinja\Lib\Database;
-
 define('LN_DS', DIRECTORY_SEPARATOR);
+define('LN_URL', 'http://' . $_SERVER['HTTP_HOST']);
 define('LN_ROOT_DIR', dirname(dirname(__FILE__ . '/')));
 define('LN_ROOT_PATH', dirname(basename(dirname(__FILE__)) . '/'));
+define('LN_PATH_VIEW', LN_ROOT_DIR . '/app/views/');
 define('LN_DEFAULT_CONTROLLER', 'base');
 define('LN_DEFAULT_ACTION', 'index');
 
@@ -18,8 +18,9 @@ $adminRouting = false;
 
 $loader = require __DIR__ . '/../vendor/autoload.php';
 include_once '../config/db.php';
-include_once '../lib/database.php';
-include_once '../lib/auth.php';
+include_once '../config/messages.php';
+include_once '../app/lib/Database.php';
+include_once '../app/lib/Auth.php';
 
 if (!empty($request)) {
     if (strpos($request, $requestHome) === 0) {

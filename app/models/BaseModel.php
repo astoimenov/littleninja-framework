@@ -15,52 +15,53 @@ class BaseModel
         );
 
         $args = array_merge($defaults, $args);
-
         if (!isset($args['table'])) {
             die('Table not defined.');
         }
 
         extract($args);
-
         $this->table = $table;
         $this->limit = $limit;
-
         $dbObject = Database::getInstance();
         $this->db = $dbObject::getDb();
     }
 
-    public function find($id)
-    {
-        return $this->select(['where' => 'id = ' . $id]);
-    }
-
-    public function select($args = array())
+    public function get($args = array())
     {
         $defaults = array(
-            'table' => $this->table,
-            'limit' => $this->limit,
+            'table' => $this->model->table,
+            'limit' => $this->model->limit,
             'where' => '',
-            'columns' => '*'
+            'columns' => '*',
+            'order_by' => '',
+            'order' => 'ASC'
         );
 
         $args = array_merge($defaults, $args);
-
         extract($args);
-
         $query = "SELECT {$columns} FROM {$table}";
 
         if (!empty($where)) {
             $query .= " WHERE {$where}";
         }
 
+        if (!empty($order_by)) {
+            $query .= " ORDER BY {$order_by} {$order}";
+        }
+
         if (!empty($limit)) {
             $query .= " LIMIT {$limit}";
         }
 
-        $resultSet = $this->db->query($query);
-        $results = $this->processResults($resultSet);
+        $resultSet = $this->model->db->query($query);
+        $results = self::processResults($resultSet);
 
         return $results;
+    }
+
+    public function getById($id)
+    {
+        return self::get(['where' => 'id = ' . $id]);
     }
 
     public function store($element)
@@ -116,7 +117,7 @@ class BaseModel
 
     public function getByName($name)
     {
-        return $this->select(array(
+        return $this->get(array(
             'where' => "name = '" . $name . "'"
         ));
     }

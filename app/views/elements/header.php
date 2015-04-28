@@ -25,13 +25,13 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <?php if (!empty($this->loggedUser) && $this->loggedUser['role'] === 'admin') : ?>
                     <ul class="nav navbar-nav">
-                        <li><a href="posts/index">Posts</a></li>
-                        <li><a href="posts/create">Add new post</a></li>
+                        <li><a href="/posts/index">Posts</a></li>
+                        <li><a href="/posts/create">Add new post</a></li>
                     </ul>
                     <?php endif; ?>
 
                     <div class="nav navbar-nav navbar-right">
-                        <?php if (!empty($this->logged_user)) {
+                        <?php if (!empty($this->loggedUser)) {
                             echo '<li><a href="/users/show/' . $this->loggedUser['id'] . '">'
                                 . htmlspecialchars($this->loggedUser['email'])
                                 . '</a></li>';

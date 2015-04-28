@@ -1,10 +1,5 @@
 <?php
-/**
- * Please note: we can use unencoded characters like ö, é etc here as we use the html5 doctype with utf8 encoding
- * in the application's header (in views/_header.php). To add new languages simply copy this file,
- * and create a language switch in your root files.
- */
-// login & registration classes
+
 define(
     'MESSAGE_ACCOUNT_NOT_ACTIVATED',
     'Your account is not activated yet. Please click on the confirm link in the mail.'

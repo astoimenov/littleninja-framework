@@ -1,6 +1,8 @@
 <?php namespace LittleNinja\Controllers;
 
 use LittleNinja\Lib\Auth;
+use LittleNinja\Lib\Redirect;
+use LittleNinja\Lib\View;
 
 /**
  * @property bool isLoggedIn
@@ -12,7 +14,7 @@ class AuthController extends BaseController
 
     public function __construct()
     {
-        parent::__construct(get_class(), 'BaseModel', '/app/views/auth/');
+        parent::__construct(get_class(), 'BaseModel');
     }
 
     public function register()
@@ -24,12 +26,10 @@ class AuthController extends BaseController
             $passRepeat = $_POST['password_confirmation'];
 
             $auth = Auth::getInstance();
-
             $auth->register($name, $email, $password, $passRepeat);
         }
 
-        $this->templateName = LN_ROOT_DIR . $this->viewsDir . 'register.php';
-        include_once $this->layout;
+        View::render('auth/register');
     }
 
     public function login()
@@ -41,12 +41,10 @@ class AuthController extends BaseController
             $auth = Auth::getInstance();
 
             $this->isLoggedIn = $auth->login($email, $password);
-            header('Location: /');
-            exit;
+            Redirect::home();
         }
 
-        $this->templateName = LN_ROOT_DIR . $this->viewsDir . 'login.php';
-        include_once $this->layout;
+        View::render('auth/login');
     }
 
     public function logout()

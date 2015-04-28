@@ -1,6 +1,7 @@
 <?php namespace LittleNinja\Controllers;
 
 use LittleNinja\Lib\Auth;
+use LittleNinja\Lib\View;
 
 /**
  * @property string templateName
@@ -8,21 +9,19 @@ use LittleNinja\Lib\Auth;
 class BaseController
 {
     protected $layout;
-    protected $viewsDir;
 
     public function __construct(
         $className = 'LittleNinja\Controllers\BaseController',
         $model = 'BaseModel',
-        $viewsDir = '/app/views/master/'
+        $table = 'none'
     )
     {
-        $this->viewsDir = $viewsDir;
         $this->className = $className;
 
         include_once LN_ROOT_DIR . '/app/models/' . $model . '.php';
         $modelClass = '\LittleNinja\Models\\' . $model;
 
-        $this->model = new $modelClass(array('table' => 'none'));
+        $this->model = new $modelClass(array('table' => $table));
 
         $auth = Auth::getInstance();
         $loggedUser = $auth->getLoggedUser();
@@ -33,7 +32,7 @@ class BaseController
 
     public function index()
     {
-        $this->templateName = LN_ROOT_DIR . $this->viewsDir . 'index.php';
-        include_once $this->layout;
+        $view = new View();
+        $view->render('master/home');
     }
 }
