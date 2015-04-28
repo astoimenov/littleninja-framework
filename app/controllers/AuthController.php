@@ -2,15 +2,15 @@
 
 use LittleNinja\Lib\Auth;
 
-/**
- * @property string templateName
- * @property bool isLoggedIn
- */
 class AuthController extends BaseController
 {
     public $registrationSuccessful = false;
 
     public $verificationSuccessful = false;
+
+    public $errors = array();
+
+    public $messages = array();
 
     public function __construct()
     {
@@ -26,10 +26,12 @@ class AuthController extends BaseController
             $pass_repeat = $_POST['password_confirmation'];
 
             $auth = Auth::getInstance();
+
             $auth->register($name, $email, $password, $pass_repeat);
         }
 
-        $this->templateName = LN_ROOT_DIR . $this->viewsDir . 'register.php';
+        $template_name = LN_ROOT_DIR . $this->views_dir . 'register.php';
+
         include_once $this->layout;
     }
 
@@ -40,18 +42,12 @@ class AuthController extends BaseController
             $password = $_POST['pass'];
 
             $auth = Auth::getInstance();
-            $this->isLoggedIn = $auth->login($email, $password);
 
-            header('Location: /');
+            $is_logged_in = $auth->login($email, $password);
         }
 
-        $this->templateName = LN_ROOT_DIR . $this->viewsDir . 'login.php';
-        include_once $this->layout;
-    }
+        $template_name = LN_ROOT_DIR . $this->views_dir . 'login.php';
 
-    public function logout()
-    {
-        $auth = Auth::getInstance();
-        $auth->logout();
+        include_once $this->layout;
     }
 }

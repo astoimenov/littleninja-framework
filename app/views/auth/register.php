@@ -5,15 +5,7 @@
                 <div class="panel-heading">Register</div>
                 <div class="panel-body">
                     <!-- Display errors here -->
-                    <div class="text-danger">
-                        <?php
-                        if (\LittleNinja\Lib\Auth::getInstance()->errors) {
-                            foreach (\LittleNinja\Lib\Auth::getInstance()->errors as $error) {
-                                echo "<div>{$error}</div>";
-                            }
-                        }
-                        ?>
-                    </div>
+                    
 
                     <form class="form-horizontal" role="form" method="POST" action="">
                         <input type="hidden" name="_token" value="" />

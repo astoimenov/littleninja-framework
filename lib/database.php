@@ -1,36 +1,33 @@
 <?php namespace LittleNinja\Lib;
 
-class DatabaseFactory
+class Database
 {
-    private static $factory = null;
-    private $database = null;
+    private static $db = null;
 
-    public static function getFactory()
+    private function __construct()
     {
-        if (!self::$factory) {
-            self::$factory = new DatabaseFactory();
-        }
+        $host = DB_HOST;
+        $username = DB_USER;
+        $password = DB_PASS;
+        $dbname = DB_NAME;
 
-        return self::$factory;
+        $db = new \mysqli($host, $username, $password, $dbname);
+        self::$db = $db;
     }
 
-    public function getConnection()
+    public static function getInstance()
     {
-        if (!$this->database) {
-            $options = array(
-                \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
-                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_WARNING
-            );
+        static $instance = null;
 
-            $this->database = new \PDO(
-                Config::get('DB_TYPE') . ':host=' . Config::get('DB_HOST') . ';dbname=' .
-                Config::get('DB_NAME') . ';port=' . Config::get('DB_PORT') . ';charset=' . Config::get('DB_CHARSET'),
-                Config::get('DB_USER'),
-                Config::get('DB_PASS'),
-                $options
-            );
+        if ($instance === null) {
+            $instance = new static();
         }
 
-        return $this->database;
+        return $instance;
+    }
+
+    public static function getDb()
+    {
+        return self::$db;
     }
 }

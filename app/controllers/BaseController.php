@@ -2,37 +2,36 @@
 
 use LittleNinja\Lib\Auth;
 
-/**
- * @property string templateName
- */
 class BaseController
 {
     protected $layout;
-    protected $viewsDir;
+    protected $views_dir;
 
     public function __construct(
-        $className = 'LittleNinja\Controllers\BaseController',
+        $class_name = 'LittleNinja\Controllers\BaseController',
         $model = 'BaseModel',
-        $viewsDir = '/app/views/master/'
+        $views_dir = '/app/views/master/'
     )
     {
-        $this->viewsDir = $viewsDir;
-        $this->className = $className;
+        $this->views_dir = $views_dir;
+        $this->class_name = $class_name;
 
         include_once LN_ROOT_DIR . '/app/models/' . $model . '.php';
-        $modelClass = '\LittleNinja\Models\\' . $model;
+        $model_class = '\LittleNinja\Models\\' . $model;
 
-        $this->model = new $modelClass(array('table' => 'none'));
+        $this->model = new $model_class(array('table' => 'none'));
 
         $auth = Auth::getInstance();
-        $this->loggedUser = $auth->getLoggedUser();
+        $logged_user = $auth->getLoggedUser();
+        $this->logged_user = $logged_user;
 
         $this->layout = LN_ROOT_DIR . '/app/views/layouts/default.php';
     }
 
     public function index()
     {
-        $this->templateName = LN_ROOT_DIR . $this->viewsDir . 'index.php';
+        $template_name = LN_ROOT_DIR . $this->views_dir . 'index.php';
+
         include_once $this->layout;
     }
 }

@@ -1,6 +1,6 @@
 <?php namespace LittleNinja\Models;
 
-use LittleNinja\Lib\DatabaseFactory;
+use LittleNinja\Lib\Database;
 
 class BaseModel
 {
@@ -25,8 +25,8 @@ class BaseModel
         $this->table = $table;
         $this->limit = $limit;
 
-        $dbObject = DatabaseFactory::getInstance();
-        $this->db = $dbObject::getDb();
+        $db_object = Database::getInstance();
+        $this->db = $db_object::getDb();
     }
 
     public function find($id)
@@ -57,8 +57,8 @@ class BaseModel
             $query .= " LIMIT {$limit}";
         }
 
-        $resultSet = $this->db->query($query);
-        $results = $this->processResults($resultSet);
+        $result_set = $this->db->query($query);
+        $results = $this->processResults($result_set);
 
         return $results;
     }
@@ -101,12 +101,12 @@ class BaseModel
         return $this->db->affected_rows;
     }
 
-    protected function processResults($resultSet)
+    protected function processResults($result_set)
     {
         $results = array();
 
-        if (!empty($resultSet) && $resultSet->num_rows > 0) {
-            while ($row = $resultSet->fetch_assoc()) {
+        if (!empty($result_set) && $result_set->num_rows > 0) {
+            while ($row = $result_set->fetch_assoc()) {
                 $results[] = $row;
             }
         }

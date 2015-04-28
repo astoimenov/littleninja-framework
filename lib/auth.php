@@ -16,8 +16,7 @@ class Auth
             self::$isLoggedIn = true;
             self::$loggedUser = array(
                 'id' => $_SESSION['user_id'],
-                'email' => $_SESSION['email'],
-                'role' => $_SESSION['role']
+                'email' => $_SESSION['email']
             );
         }
     }
@@ -28,7 +27,7 @@ class Auth
             return true;
         } else {
             try {
-                $dbObject = DatabaseFactory::getInstance();
+                $dbObject = Database::getInstance();
                 $this->dbConnection = $dbObject->getDb();
 
                 return true;
@@ -63,9 +62,9 @@ class Auth
 
     public function login($email, $password)
     {
-        $dbObject = DatabaseFactory::getInstance();
+        $dbObject = Database::getInstance();
         $db = $dbObject->getDb();
-        $query = "SELECT id, email, pass, role FROM users WHERE email = ? LIMIT 1";
+        $query = "SELECT id, email, pass FROM users WHERE email = ? LIMIT 1";
         if ($statement = $db->prepare($query)) {
             $statement->bind_param('s', $email);
             $statement->execute();
@@ -78,7 +77,6 @@ class Auth
         if ($row !== null && password_verify($password, $row['pass'])) {
             $_SESSION['email'] = $row['email'];
             $_SESSION['user_id'] = $row['id'];
-            $_SESSION['role'] = $row['role'];
 
             return true;
         }
@@ -93,7 +91,7 @@ class Auth
         if (empty($email)) {
             $this->errors[] = MESSAGE_EMAIL_EMPTY;
         } elseif (empty($name)) {
-            $this->errors[] = MESSAGE_NAME_EMPTY;
+            $this->errors[] = MESSAGE_USERNAME_EMPTY;
         } elseif (empty($pass) || empty($pass_repeat)) {
             $this->errors[] = MESSAGE_PASSWORD_EMPTY;
         } elseif ($pass !== $pass_repeat) {
@@ -103,7 +101,7 @@ class Auth
         } elseif (strlen($email) > 255) {
             $this->errors[] = MESSAGE_EMAIL_TOO_LONG;
         } elseif (strlen($name) > 255) {
-            $this->errors[] = MESSAGE_NAME_BAD_LENGTH;
+            $this->errors[] = MESSAGE_USERNAME_BAD_LENGTH;
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->errors[] = MESSAGE_EMAIL_INVALID;
         } elseif ($this->databaseConnection()) {
@@ -114,14 +112,14 @@ class Auth
 
             if (count($result) > 0) {
                 for ($i = 0; $i < count($result); $i++) {
-                    $this->errors[] = MESSAGE_EMAIL_ALREADY_EXISTS;
+                    $this->errors[] = 'MESSAGE_EMAIL_ALREADY_EXISTS';
                 }
             } else {
-                $passHash = password_hash($pass, PASSWORD_BCRYPT);
-//                $activationHash = sha1(uniqid(mt_rand(), true));
+                $pass_hash = password_hash($pass, PASSWORD_BCRYPT);
+//                $activation_hash = sha1(uniqid(mt_rand(), true));
 
                 $queryInsertUser = $this->dbConnection->prepare("INSERT INTO users (name, email, pass) VALUES (?,?,?)");
-                $queryInsertUser->bind_param('sss', $name, $email, $passHash);
+                $queryInsertUser->bind_param('sss', $name, $email, $pass_hash);
                 $queryInsertUser->execute();
             }
         }
@@ -133,13 +131,5 @@ class Auth
         } else {
             var_dump($db->error);
         }*/
-    }
-
-    public function logout()
-    {
-        session_start();
-        session_destroy();
-
-        header('Location: /');
     }
 }
