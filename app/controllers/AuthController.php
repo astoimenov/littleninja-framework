@@ -2,15 +2,13 @@
 
 use LittleNinja\Lib\Auth;
 
+/**
+ * @property bool isLoggedIn
+ */
 class AuthController extends BaseController
 {
     public $registrationSuccessful = false;
-
     public $verificationSuccessful = false;
-
-    public $errors = array();
-
-    public $messages = array();
 
     public function __construct()
     {
@@ -23,15 +21,14 @@ class AuthController extends BaseController
             $name = $_POST['name'];
             $email = $_POST['email'];
             $password = $_POST['pass'];
-            $pass_repeat = $_POST['password_confirmation'];
+            $passRepeat = $_POST['password_confirmation'];
 
             $auth = Auth::getInstance();
 
-            $auth->register($name, $email, $password, $pass_repeat);
+            $auth->register($name, $email, $password, $passRepeat);
         }
 
-        $template_name = LN_ROOT_DIR . $this->views_dir . 'register.php';
-
+        $this->templateName = LN_ROOT_DIR . $this->viewsDir . 'register.php';
         include_once $this->layout;
     }
 
@@ -43,11 +40,18 @@ class AuthController extends BaseController
 
             $auth = Auth::getInstance();
 
-            $is_logged_in = $auth->login($email, $password);
+            $this->isLoggedIn = $auth->login($email, $password);
+            header('Location: /');
+            exit;
         }
 
-        $template_name = LN_ROOT_DIR . $this->views_dir . 'login.php';
-
+        $this->templateName = LN_ROOT_DIR . $this->viewsDir . 'login.php';
         include_once $this->layout;
+    }
+
+    public function logout()
+    {
+        $auth = Auth::getInstance();
+        $auth->logout();
     }
 }

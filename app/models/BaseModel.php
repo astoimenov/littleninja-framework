@@ -25,8 +25,8 @@ class BaseModel
         $this->table = $table;
         $this->limit = $limit;
 
-        $db_object = Database::getInstance();
-        $this->db = $db_object::getDb();
+        $dbObject = Database::getInstance();
+        $this->db = $dbObject::getDb();
     }
 
     public function find($id)
@@ -57,8 +57,8 @@ class BaseModel
             $query .= " LIMIT {$limit}";
         }
 
-        $result_set = $this->db->query($query);
-        $results = $this->processResults($result_set);
+        $resultSet = $this->db->query($query);
+        $results = $this->processResults($resultSet);
 
         return $results;
     }
@@ -101,12 +101,12 @@ class BaseModel
         return $this->db->affected_rows;
     }
 
-    protected function processResults($result_set)
+    protected function processResults($resultSet)
     {
         $results = array();
 
-        if (!empty($result_set) && $result_set->num_rows > 0) {
-            while ($row = $result_set->fetch_assoc()) {
+        if (!empty($resultSet) && $resultSet->num_rows > 0) {
+            while ($row = $resultSet->fetch_assoc()) {
                 $results[] = $row;
             }
         }
