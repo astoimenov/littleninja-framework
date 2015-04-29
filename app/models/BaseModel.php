@@ -69,15 +69,19 @@ class BaseModel
         $keys = array_keys($element);
         $values = array();
         foreach ($element as $key => $value) {
-            $values[] = "'" . $this->db->real_escape_string($value) . "'";
+            $values[] = "'" . $this->model->db->real_escape_string($value) . "'";
         }
 
         $keys = implode($keys, ',');
         $values = implode($values, ',');
-        $query = "INSERT INTO {$this->table}($keys) VALUES($values)";
-        $this->db->query($query);
+        $query = "INSERT INTO {$this->model->table}($keys) VALUES($values)";
 
-        return $this->db->affected_rows;
+        if ($this->model->db->query($query)) {
+            return $this->model->db->affected_rows;
+        } else {
+            var_dump($this->model->db->error);
+            die;
+        }
     }
 
     public function update($element)
@@ -100,6 +104,17 @@ class BaseModel
         $this->db->query($query);
 
         return $this->db->affected_rows;
+    }
+
+    public function destroy($id)
+    {
+        $query = "DELETE FROM {$this->table} WHERE id = {$id}";
+        if ($this->db->query($query)) {
+            return $this->db->affected_rows;
+        } else {
+            var_dump($this->db->error);
+            die;
+        }
     }
 
     protected function processResults($resultSet)

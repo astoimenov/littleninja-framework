@@ -1,9 +1,10 @@
-<?php
+<?php namespace LittleNinja\Controllers;
 
-namespace LittleNinja\Controllers;
-
+use Carbon\Carbon;
+use LittleNinja\Lib\Redirect;
 use LittleNinja\Lib\View;
 use LittleNinja\Models\Post;
+use Stringy\Stringy;
 
 class PostsController extends BaseController
 {
@@ -25,12 +26,27 @@ class PostsController extends BaseController
 
     public function store()
     {
-        $post = new Post();
+        $post['title'] = $_POST['title'];
+        $post['slug'] = Stringy::create($post['title'])->slugify('-');
+        $post['content'] = $_POST['content'];
+        $post['users_id'] = $this->loggedUser['id'];
+        $post['created_at'] = Carbon::now();
+        Post::store($post);
+        Redirect::to('/posts/index');
     }
 
-    public function edit()
+    public function show($slug)
     {
-        View::render('posts/edit');
+        $postModel = new Post();
+        $data = $postModel->getBySlug($slug);
+        View::render('posts/show', $data[0]);
+    }
+
+    public function edit($slug)
+    {
+        $postModel = new Post();
+        $data = $postModel->getBySlug($slug);
+        View::render('posts/edit', $data[0]);
     }
 
     public function update()
@@ -38,8 +54,10 @@ class PostsController extends BaseController
 
     }
 
-    public function destroy()
+    public function delete($id)
     {
-
+        $postModel = new Post();
+        $postModel->destroy($id);
+        Redirect::to('/posts/index');
     }
 }

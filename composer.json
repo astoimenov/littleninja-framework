@@ -9,7 +9,8 @@
         }
     ],
     "require": {
-        "nesbot/carbon": "~1.18"
+        "nesbot/carbon": "~1.18",
+        "danielstjules/stringy": "~1.9"
     },
     "autoload": {
         "psr-4": {
