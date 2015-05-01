@@ -3,6 +3,7 @@
 use Carbon\Carbon;
 use LittleNinja\Lib\Redirect;
 use LittleNinja\Lib\View;
+use LittleNinja\Models\Comment;
 use LittleNinja\Models\Post;
 use Stringy\Stringy;
 
@@ -49,7 +50,7 @@ class PostsController extends BaseController
             $post['created_at'] = Carbon::now()->timezone('Europe/Sofia');
             Post::store($post);
 
-            Redirect::to('/posts/index');
+            Redirect::to('/home/index');
         }
 
         View::render('posts/create');
@@ -59,6 +60,7 @@ class PostsController extends BaseController
     {
         $postModel = new Post();
         $post = $postModel->getBySlug($slug)[0];
+        $post['comments'] = Comment::getByPostId($post['id']);
 
         View::render('posts/show', $post);
     }

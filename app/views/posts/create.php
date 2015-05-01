@@ -1,5 +1,5 @@
 <form method="POST" action="/posts/store" accept-charset="UTF-8">
-    <input name="_token" type="hidden" value="FzU5DwntcIawvlO0RU6PapBqBofKmkQHkS6fjdGN">
+    <input name="_token" type="hidden" value="">
 
     <div class="form-group">
         <label for="title">Title:</label>

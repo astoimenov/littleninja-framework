@@ -40,7 +40,6 @@ class BaseModel
         $args = array_merge($defaults, $args);
         extract($args);
         $query = "SELECT {$columns} FROM {$table}";
-
         if (!empty($where)) {
             $query .= " WHERE {$where}";
         }

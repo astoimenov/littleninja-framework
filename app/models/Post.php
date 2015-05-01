@@ -9,11 +9,32 @@ class Post extends BaseModel
         parent::__construct(array('table' => 'blog_posts'));
     }
 
+    public function getById($id)
+    {
+        $query = "SELECT id,title,content,slug FROM blog_posts WHERE id = '{$id}'";
+
+        if ($resultSet = $this->model->db->query($query)) {
+            $results = self::processResults($resultSet)[0];
+
+            return $results;
+        } else {
+            var_dump($this->db->error);
+            die;
+        }
+    }
+
     public function getByTitle($title)
     {
-        return self::get(array(
-            'where' => "title = '" . $title . "'"
-        ));
+        $query = "SELECT id,title,content FROM blog_posts WHERE title = '{$title}'";
+
+        if ($resultSet = $this->db->query($query)) {
+            $results = self::processResults($resultSet);
+
+            return $results;
+        } else {
+            var_dump($this->db->error);
+            die;
+        }
     }
 
     public function getBySlug($slug)
