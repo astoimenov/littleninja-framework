@@ -15,49 +15,70 @@ class PostsController extends BaseController
 
     public function index($order)
     {
-        $data = Post::get(array('order_by' => 'created_at', 'order' => 'DESC'));
-        View::render('posts/index', $data);
+        $this->isAdmin();
+        $posts = Post::get();
+
+        View::render('posts/index', $posts);
     }
 
     public function create()
     {
+        $this->isAdmin();
+
         View::render('posts/create');
     }
 
     public function store()
     {
-        $post['title'] = $_POST['title'];
+        $this->isAdmin();
+
+        $post['title'] = htmlspecialchars($_POST['title'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $post['slug'] = Stringy::create($post['title'])->slugify('-');
-        $post['content'] = $_POST['content'];
+        $post['content'] = htmlspecialchars($_POST['content'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $post['users_id'] = $this->loggedUser['id'];
-        $post['created_at'] = Carbon::now();
+        $post['created_at'] = Carbon::now()->timezone('Europe/Sofia');
         Post::store($post);
+
         Redirect::to('/posts/index');
     }
 
     public function show($slug)
     {
         $postModel = new Post();
-        $data = $postModel->getBySlug($slug);
-        View::render('posts/show', $data[0]);
+        $post = $postModel->getBySlug($slug)[0];
+
+        View::render('posts/show', $post);
     }
 
     public function edit($slug)
     {
+        $this->isAdmin();
+
         $postModel = new Post();
-        $data = $postModel->getBySlug($slug);
-        View::render('posts/edit', $data[0]);
+        $post = $postModel->getBySlug($slug)[0];
+
+        View::render('posts/edit', $post);
     }
 
-    public function update()
+    public function update($id)
     {
+        $this->isAdmin();
 
+        $post['id'] = $id;
+        $post['title'] = htmlspecialchars($_POST['title'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $post['content'] = htmlspecialchars($_POST['content'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $postModel = new Post();
+        $postModel->update($post);
+
+        Redirect::to('/posts/index');
     }
 
     public function delete($id)
     {
+        $this->isAdmin();
         $postModel = new Post();
         $postModel->destroy($id);
+
         Redirect::to('/posts/index');
     }
 }

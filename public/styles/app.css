@@ -1,7 +1,31 @@
+@font-face {
+  font-family: BebasNeue;
+  src: url("fonts/BebasNeue%20Book.otf"); }
 body {
   padding-top: 60px; }
-
-footer {
-  height: 35px; }
+  body h1, body h2, body h3 {
+    font-family: BebasNeue, "Helvetica Neue", Helvetica, sans-serif;
+    letter-spacing: 2px; }
+  body h1, body h2 {
+    margin-top: 12px; }
+  body h3 {
+    margin-top: 9px;
+    letter-spacing: 1px; }
+  body .navbar-inverse {
+    -webkit-box-shadow: #1c2a3d 0 4px 8px 0;
+    -moz-box-shadow: #1c2a3d 0 4px 8px 0;
+    box-shadow: #1c2a3d 0 4px 8px 0; }
+  body main {
+    margin-bottom: 60px; }
+    body main article {
+      background-color: #384d5f;
+      margin-bottom: 5px;
+      padding: 5px; }
+  body footer {
+    background-color: #2B3E50;
+    -webkit-box-shadow: #1c2a3d 0 -4px 8px 0;
+    -moz-box-shadow: #1c2a3d 0 -4px 8px 0;
+    box-shadow: #1c2a3d 0 -4px 8px 0;
+    height: 35px; }
 
 /*# sourceMappingURL=app.css.map */

@@ -19,14 +19,16 @@ class AuthController extends BaseController
 
     public function register()
     {
-        if (!empty($_POST['email']) || !empty($_POST['pass'])) {
+        if (!empty($_POST['submit'])) {
             $name = $_POST['name'];
             $email = $_POST['email'];
-            $password = $_POST['pass'];
+            $password = $_POST['password'];
             $passRepeat = $_POST['password_confirmation'];
 
             $auth = Auth::getInstance();
-            $auth->register($name, $email, $password, $passRepeat);
+            if ($auth->register($name, $email, $password, $passRepeat)) {
+                Redirect::to('/auth/login');
+            }
         }
 
         View::render('auth/register');
@@ -34,14 +36,15 @@ class AuthController extends BaseController
 
     public function login()
     {
-        if (!(empty($_POST['email']) || empty($_POST['pass']))) {
+        if (!empty($_POST['submit'])) {
             $email = $_POST['email'];
-            $password = $_POST['pass'];
+            $password = $_POST['password'];
 
             $auth = Auth::getInstance();
 
-            $this->isLoggedIn = $auth->login($email, $password);
-            Redirect::home();
+            if ($auth->login($email, $password)) {
+                Redirect::home();
+            }
         }
 
         View::render('auth/login');

@@ -1,4 +1,4 @@
-<form method="POST" action="/posts/update" accept-charset="UTF-8">
+<form method="POST" action="/posts/update/<?php echo $data['id'] ?>" accept-charset="UTF-8">
     <input name="_token" type="hidden" value="FzU5DwntcIawvlO0RU6PapBqBofKmkQHkS6fjdGN">
 
     <div class="form-group">
@@ -13,6 +13,6 @@
     </div>
 
     <div class="form-group">
-        <input class="btn btn-primary form-control" type="submit" value="Add article">
+        <input class="btn btn-primary form-control" type="submit" value="Edit article">
     </div>
 </form>

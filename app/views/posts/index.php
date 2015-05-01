@@ -1,19 +1,31 @@
-<section class="articles col-sm-8">
-<?php
+<div class="panel panel-default">
+    <div class="panel-heading">Posts</div>
 
-use Carbon\Carbon;
-
-foreach ($data as $post) {
-    $time = Carbon::createFromTimestamp(strtotime($post['created_at']));
-    echo "\n<article class='row' id='post-{$post['id']}'>
-        <div class='row'>
-            <h3 class='col-sm-10'><a href='/posts/show/{$post['slug']}'>{$post['title']}</a></h3>
-            <a href='/posts/edit/{$post['slug']}' class='btn btn-default glyphicon glyphicon-edit'></a>
-            <a href='/posts/delete/{$post['id']}' class='btn btn-danger glyphicon glyphicon-remove'></a>
-        </div>
-        <time>{$time->diffForHumans()}</time>
-        <div class='post-content'>{$post['content']}</div>
-    </article>";
-}
-?>
-</section>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Slug</th>
+            <th>Content</th>
+            <th>Created at</th>
+            <th>Manage</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($data as $post) : ?>
+            <tr>
+                <td><?= $post['id'] ?></td>
+                <td><?= $post['title'] ?></td>
+                <td><?= $post['slug'] ?></td>
+                <td><?= $post['content'] ?></td>
+                <td><?= $post['created_at'] ?></td>
+                <td>
+                    <a href="/posts/edit/<?= $post['slug'] ?>" class="btn btn-default glyphicon glyphicon-edit"></a>
+                    <a href="/posts/delete/<?= $post['id'] ?>" class="btn btn-danger glyphicon glyphicon-remove"></a>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>

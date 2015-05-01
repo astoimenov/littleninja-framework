@@ -9,45 +9,20 @@ class Auth
 
     public function __construct()
     {
-        session_set_cookie_params(1800, '/');
         session_start();
 
-        if (!empty($_SESSION['email'])) {
+        if (!empty($_SESSION['user'])) {
             self::$isLoggedIn = true;
-            self::$loggedUser = array(
-                'id' => $_SESSION['user_id'],
-                'email' => $_SESSION['email'],
-                'role' => $_SESSION['role']
-            );
-        }
-    }
-
-    private function databaseConnection()
-    {
-        if ($this->dbConnection != null) {
-            return true;
-        } else {
-            try {
-                $dbObject = Database::getInstance();
-                $this->dbConnection = $dbObject->getDb();
-
-                return true;
-            } catch (\Exception $e) {
-                $this->errors[] = MESSAGE_DATABASE_ERROR;
-
-                return false;
-            }
+            self::$loggedUser = $_SESSION['user'];
         }
     }
 
     public static function getInstance()
     {
         static $instance = null;
-
         if ($instance === null) {
             $instance = new static();
         }
-
         return $instance;
     }
 
@@ -63,102 +38,129 @@ class Auth
 
     public function login($email, $password)
     {
-        $dbObject = Database::getInstance();
-        $db = $dbObject->getDb();
-        $query = "SELECT id, email, pass, role FROM users WHERE email = ? LIMIT 1";
+
+        self::databaseConnection();
+        $db = $this->dbConnection;
+
+        $query = "SELECT id, email, password, role FROM users WHERE email = ? LIMIT 1";
         if ($statement = $db->prepare($query)) {
             $statement->bind_param('s', $email);
             $statement->execute();
         } else {
             var_dump($db->error);
+
+            return false;
         }
 
         $result_set = $statement->get_result();
         $row = $result_set->fetch_assoc();
-        if ($row !== null && password_verify($password, $row['pass'])) {
-            $_SESSION['email'] = $row['email'];
-            $_SESSION['user_id'] = $row['id'];
-            $_SESSION['role'] = $row['role'];
+
+        if ($row !== null && password_verify($password, $row['password'])) {
+            $_SESSION['user'] = [
+                'email' => $row['email'],
+                'id' => $row['id'],
+                'role' => $row['role']
+            ];
 
             return true;
+        }
+
+        if ($row === null) {
+            $this->errors['email'] = MESSAGE_USER_DOES_NOT_EXIST;
+        } elseif (!password_verify($password, $row['password'])) {
+            $this->errors['password'] = MESSAGE_PASSWORD_WRONG;
         }
 
         return false;
     }
 
-    public function register($name, $email, $pass, $pass_repeat)
+    private function databaseConnection()
     {
+        if ($this->dbConnection != null) {
+            return true;
+        } else {
+            try {
+                $dbObject = Database::getInstance();
+                $this->dbConnection = $dbObject->getDb();
+                return true;
+            } catch (\Exception $e) {
+                $this->errors[] = MESSAGE_DATABASE_ERROR;
+                return false;
+            }
+        }
+    }
+
+    public function register($name, $email, $password, $confirm_password)
+    {
+        $name = trim($name);
         $email = trim($email);
 
-        if (empty($email)) {
-            $this->errors[] = MESSAGE_EMAIL_EMPTY;
-            $email = null;
-        }
         if (empty($name)) {
-            $this->errors[] = MESSAGE_NAME_EMPTY;
-        }
-        if (empty($pass) || empty($pass_repeat)) {
-            $this->errors[] = MESSAGE_PASSWORD_EMPTY;
-        }
-        if ($pass !== $pass_repeat) {
-            $this->errors[] = MESSAGE_PASSWORD_BAD_CONFIRM;
-        }
-        if (strlen($pass) < 6) {
-            $this->errors[] = MESSAGE_PASSWORD_TOO_SHORT;
-        }
-        if (strlen($email) > 255) {
-            $this->errors[] = MESSAGE_EMAIL_TOO_LONG;
+            $this->errors['name'] = MESSAGE_NAME_EMPTY;
         }
         if (strlen($name) > 255) {
-            $this->errors[] = MESSAGE_NAME_BAD_LENGTH;
+            $this->errors['name'] = MESSAGE_NAME_BAD_LENGTH;
+        }
+
+        if (empty($email) || $email === null) {
+            $this->errors['email'] = MESSAGE_EMAIL_EMPTY;
+            $email = null;
+        }
+        if (strlen($email) > 255) {
+            $this->errors['email'] = MESSAGE_EMAIL_TOO_LONG;
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->errors[] = MESSAGE_EMAIL_INVALID;
+            $this->errors['email'] = MESSAGE_EMAIL_INVALID;
         }
-        if ($this->databaseConnection()) {
-            $queryCheckUser = $this->dbConnection->prepare("SELECT email FROM users WHERE email=?");
-            $queryCheckUser->bind_param('s', $email);
-            $queryCheckUser->execute();
-            $result = $queryCheckUser->fetch();
 
-            if (count($result) > 0) {
-                $this->errors[] = MESSAGE_EMAIL_ALREADY_EXISTS;
-            } else {
-                $passHash = password_hash($pass, PASSWORD_BCRYPT);
-//                $activationHash = sha1(uniqid(mt_rand(), true));
-
-                $queryInsertUser = $this->dbConnection->prepare("INSERT INTO users (name, email, pass) VALUES (?,?,?)");
-                $queryInsertUser->bind_param('sss', $name, $email, $passHash);
-                $queryInsertUser->execute();
-            }
+        if (empty($password) || empty($confirm_password)) {
+            $this->errors['password'] = MESSAGE_PASSWORD_EMPTY;
         }
-        /*$dbObject = Database::getInstance();
-        $db = $dbObject->getDb();
-        $query = "INSERT INTO users (name, email, pass) VALUES (?,?,?)";
-        if ($statement = $db->prepare($query)) {
-            $validator = new Validator();
-            $validator->addValidation($name, 'req', 'Please fill name');
-            $validator->addValidation($email, 'req', 'Please fill email');
-            if ($validator->validateForm()) {
-                $statement->bind_param('sss', $name, $email, password_hash($pass, PASSWORD_BCRYPT));
-                $statement->execute();
+        if (strlen($password) < 6) {
+            $this->errors['password'] = MESSAGE_PASSWORD_TOO_SHORT;
+        }
+        if ($password !== $confirm_password) {
+            $this->errors['confirm_password'] = MESSAGE_PASSWORD_BAD_CONFIRM;
+        }
+
+        if (self::databaseConnection() && empty($this->errors)) {
+            if ($queryCheckUser = $this->dbConnection->prepare("SELECT email FROM users WHERE email=?")) {
+                $queryCheckUser->bind_param('s', $email);
+                $queryCheckUser->execute();
+                $result = $queryCheckUser->fetch();
+                if (count($result) > 0) {
+                    $this->errors['email'] = MESSAGE_EMAIL_ALREADY_EXISTS;
+
+                    return false;
+                } else {
+                    $passHash = password_hash($password, PASSWORD_BCRYPT);
+                    if ($queryInsertUser =
+                        $this->dbConnection->prepare("INSERT INTO users (name, email, password) VALUES (?,?,?)")
+                    ) {
+                        $queryInsertUser->bind_param('sss', $name, $email, $passHash);
+                        $queryInsertUser->execute();
+
+                        return true;
+                    } else {
+                        var_dump($this->dbConnection->error);
+
+                        return false;
+                    }
+                }
             } else {
-                $error_hash = $validator->getErrors();
-//                foreach ($error_hash as $inp_err) {
-                    $this->errors[] = $error_hash;
-//                }
+                var_dump($this->dbConnection->error);
+
+                return false;
             }
         } else {
-            var_dump($db->error);
-        }*/
+            return false;
+        }
     }
 
     public function logout()
     {
-        session_start();
-        session_destroy();
+        unset($_SESSION['user']);
 
-        header('Location: /');
-        exit;
+        Redirect::home();
     }
 }

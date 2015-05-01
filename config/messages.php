@@ -12,7 +12,7 @@ define(
 );
 define('MESSAGE_EMAIL_EMPTY', 'Email cannot be empty');
 define('MESSAGE_EMAIL_INVALID', 'Your email address is not in a valid email format');
-define('MESSAGE_EMAIL_TOO_LONG', 'Email cannot be longer than 64 characters');
+define('MESSAGE_EMAIL_TOO_LONG', 'Email cannot be longer than 255 characters');
 define("MESSAGE_LINK_PARAMETER_EMPTY", 'Empty link parameter data.');
 define('MESSAGE_LOGGED_OUT', 'You have been logged out.');
 define('MESSAGE_LOGIN_FAILED', 'Login failed.');
@@ -35,7 +35,7 @@ define(
 );
 define("MESSAGE_USER_DOES_NOT_EXIST", "This user does not exist");
 define("MESSAGE_NAME_BAD_LENGTH", "Username cannot be shorter than 2 or longer than 64 characters");
-define("MESSAGE_NAME_EMPTY", "Username field was empty");
+define("MESSAGE_NAME_EMPTY", "Name field cannot be empty");
 define(
     "MESSAGE_NAME_INVALID",
     "Username does not fit the name scheme: only a-Z and numbers are allowed, 2 to 64 characters"
