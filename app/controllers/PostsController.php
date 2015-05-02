@@ -16,10 +16,12 @@ class PostsController extends BaseController
         parent::__construct(get_class(), 'Post', 'blog_posts');
     }
 
-    public function index($order)
+    public function index()
     {
         $this->isAdmin();
-        $posts = Post::get();
+
+        $postModel = new Post();
+        $posts = $postModel->get();
 
         View::render('posts/index', $posts);
     }
@@ -42,13 +44,14 @@ class PostsController extends BaseController
             $this->errors['content'] = MESSAGE_CONTENT_BAD_LENGTH;
         }
 
-        if (empty($this->errors)) {
+        if (empty($this->errors) && $this->checkCsrfToken()) {
             $post['title'] = htmlspecialchars($_POST['title'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
             $post['slug'] = Stringy::create($post['title'])->slugify('-');
             $post['content'] = htmlspecialchars($_POST['content'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
             $post['users_id'] = $this->loggedUser['id'];
             $post['created_at'] = Carbon::now()->timezone('Europe/Sofia');
-            Post::store($post);
+            $postModel = new Post();
+            $postModel->store($post);
 
             Redirect::to('/home/index');
         }
@@ -60,7 +63,9 @@ class PostsController extends BaseController
     {
         $postModel = new Post();
         $post = $postModel->getBySlug($slug)[0];
-        $post['comments'] = Comment::getByPostId($post['id']);
+
+        $commentModel = new Comment();
+        $post['comments'] = $commentModel->getByPostId($post['id']);
 
         View::render('posts/show', $post);
     }
@@ -79,18 +84,24 @@ class PostsController extends BaseController
     {
         $this->isAdmin();
 
-        $post['id'] = $id;
-        $post['title'] = htmlspecialchars($_POST['title'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        $post['content'] = htmlspecialchars($_POST['content'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        $postModel = new Post();
-        $postModel->update($post);
+        if ($this->checkCsrfToken()) {
+            $post['id'] = $id;
+            $post['title'] = htmlspecialchars($_POST['title'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $post['content'] = htmlspecialchars($_POST['content'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
-        Redirect::to('/posts/index');
+            $postModel = new Post();
+            $postModel->update($post);
+
+            Redirect::to('/posts/index');
+        }
+
+        Redirect::home();
     }
 
     public function delete($id)
     {
         $this->isAdmin();
+
         $postModel = new Post();
         $postModel->destroy($id);
 

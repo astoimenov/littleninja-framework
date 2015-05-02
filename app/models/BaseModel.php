@@ -26,11 +26,16 @@ class BaseModel
         $this->db = $dbObject::getDb();
     }
 
+    public function getById($id)
+    {
+        return self::get(['where' => 'id = ' . $id]);
+    }
+
     public function get($args = array())
     {
         $defaults = array(
-            'table' => $this->model->table,
-            'limit' => $this->model->limit,
+            'table' => $this->table,
+            'limit' => $this->limit,
             'where' => '',
             'columns' => '*',
             'order_by' => '',
@@ -52,15 +57,23 @@ class BaseModel
             $query .= " LIMIT {$limit}";
         }
 
-        $resultSet = $this->model->db->query($query);
+        $resultSet = $this->db->query($query);
         $results = self::processResults($resultSet);
 
         return $results;
     }
 
-    public function getById($id)
+    protected function processResults($resultSet)
     {
-        return self::get(['where' => 'id = ' . $id]);
+        $results = array();
+
+        if (!empty($resultSet) && $resultSet->num_rows > 0) {
+            while ($row = $resultSet->fetch_assoc()) {
+                $results[] = $row;
+            }
+        }
+
+        return $results;
     }
 
     public function store($element)
@@ -68,17 +81,17 @@ class BaseModel
         $keys = array_keys($element);
         $values = array();
         foreach ($element as $key => $value) {
-            $values[] = "'" . $this->model->db->real_escape_string($value) . "'";
+            $values[] = "'" . $this->db->real_escape_string($value) . "'";
         }
 
         $keys = implode($keys, ',');
         $values = implode($values, ',');
-        $query = "INSERT INTO {$this->model->table}($keys) VALUES($values)";
+        $query = "INSERT INTO {$this->table}($keys) VALUES($values)";
 
-        if ($this->model->db->query($query)) {
-            return $this->model->db->affected_rows;
+        if ($this->db->query($query)) {
+            return $this->db->affected_rows;
         } else {
-            var_dump($this->model->db->error);
+            var_dump($this->db->error);
             die;
         }
     }
@@ -114,19 +127,6 @@ class BaseModel
             var_dump($this->db->error);
             die;
         }
-    }
-
-    protected function processResults($resultSet)
-    {
-        $results = array();
-
-        if (!empty($resultSet) && $resultSet->num_rows > 0) {
-            while ($row = $resultSet->fetch_assoc()) {
-                $results[] = $row;
-            }
-        }
-
-        return $results;
     }
 
     public function getByName($name)

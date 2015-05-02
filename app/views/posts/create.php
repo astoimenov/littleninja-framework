@@ -1,10 +1,10 @@
 <form method="POST" action="/posts/store" accept-charset="UTF-8">
-    <input name="_token" type="hidden" value="">
+    <input name="_token" type="hidden" value="<?= $_SESSION['csrf_token'] ?>">
 
     <div class="form-group">
         <label for="title">Title:</label>
         <input class="form-control" name="title" type="text" id="title"
-            value="<?php if (isset($_POST['title'])) echo $_POST['title']; ?>" />
+               value="<?php if (isset($_POST['title'])) echo $_POST['title']; ?>"/>
         <?php if (isset($this->errors['title'])) : ?>
             <div class="text-danger">
                 <?= $this->errors['title'] ?>
@@ -28,6 +28,6 @@
     </div>
 
     <div class="form-group">
-        <input class="btn btn-primary form-control" type="submit" value="Add article" />
+        <input class="btn btn-primary form-control" type="submit" value="Add article"/>
     </div>
 </form>

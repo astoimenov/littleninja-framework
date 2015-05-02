@@ -13,7 +13,9 @@ class HomeController extends BaseController
     public function index()
     {
         $args = array('order_by' => 'created_at', 'order' => 'DESC');
-        $posts = Post::get($args);
+
+        $postModel = new Post();
+        $posts = $postModel->get($args);
 
         View::render('home/index', $posts);
     }

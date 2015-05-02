@@ -4,14 +4,8 @@ use LittleNinja\Lib\Auth;
 use LittleNinja\Lib\Redirect;
 use LittleNinja\Lib\View;
 
-/**
- * @property bool isLoggedIn
- */
 class AuthController extends BaseController
 {
-    public $registrationSuccessful = false;
-    public $verificationSuccessful = false;
-
     public function __construct()
     {
         parent::__construct(get_class(), 'BaseModel');
@@ -19,7 +13,7 @@ class AuthController extends BaseController
 
     public function register()
     {
-        if (!empty($_POST['submit'])) {
+        if (!empty($_POST['submit']) && $this->checkCsrfToken()) {
             $name = $_POST['name'];
             $email = $_POST['email'];
             $password = $_POST['password'];
@@ -36,7 +30,7 @@ class AuthController extends BaseController
 
     public function login()
     {
-        if (!empty($_POST['submit'])) {
+        if (!empty($_POST['submit']) && $this->checkCsrfToken()) {
             $email = $_POST['email'];
             $password = $_POST['password'];
 

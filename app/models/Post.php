@@ -13,7 +13,7 @@ class Post extends BaseModel
     {
         $query = "SELECT id,title,content,slug FROM blog_posts WHERE id = '{$id}'";
 
-        if ($resultSet = $this->model->db->query($query)) {
+        if ($resultSet = $this->db->query($query)) {
             $results = self::processResults($resultSet)[0];
 
             return $results;
@@ -39,7 +39,7 @@ class Post extends BaseModel
 
     public function getBySlug($slug)
     {
-        $query = "SELECT id,title,content FROM blog_posts WHERE slug = '{$slug}'";
+        $query = "SELECT id,title,content,slug FROM blog_posts WHERE slug = '{$slug}'";
 
         if ($resultSet = $this->db->query($query)) {
             $results = self::processResults($resultSet);

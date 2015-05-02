@@ -22,8 +22,9 @@
     </div>
     <div class="comment-form">
         <form method="POST" action="/comments/store" accept-charset="UTF-8">
-            <input name="_token" type="hidden" value="">
+            <input name="_token" type="hidden" value="<?= $_SESSION['csrf_token'] ?>">
             <input name="blog_post_id" type="hidden" value="<?= $data['id'] ?>">
+            <input name="slug" type="hidden" value="<?= $data['slug'] ?>">
             <?php if (empty($this->loggedUser)) : ?>
                 <div class="form-group">
                     <label for="name" class="control-label">Name</label>
@@ -31,9 +32,9 @@
                     <div class="">
                         <input type="text" class="form-control" name="name" id="name"
                                value="<?php if (isset($_POST['name'])) echo $_POST['name']; ?>"/>
-                        <?php if (isset($errors['name'])) : ?>
+                        <?php if (isset($this->errors['name'])) : ?>
                             <div class="text-danger">
-                                <?= $errors['name'] ?>
+                                <?= $this->errors['name'] ?>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -45,16 +46,16 @@
                     <div class="">
                         <input type="email" class="form-control" name="email" id="email"
                                value="<?php if (isset($_POST['email'])) echo $_POST['email']; ?>"/>
-                        <?php if (isset($errors['email'])) : ?>
+                        <?php if (isset($this->errors['email'])) : ?>
                             <div class="text-danger">
-                                <?= $errors['email'] ?>
+                                <?= $this->errors['email'] ?>
                             </div>
                         <?php endif; ?>
                     </div>
                 </div>
             <?php endif; ?>
             <div class="form-group">
-                <label for="content">Content:</label>
+                <label for="content">Comment:</label>
         <textarea class="form-control" name="content"
                   cols="25" rows="5" id="content"><?php
             if (isset($_POST['content'])) {
@@ -69,7 +70,7 @@
             </div>
 
             <div class="form-group">
-                <input class="btn btn-primary form-control" type="submit" value="Add article"/>
+                <input class="btn btn-primary form-control" type="submit" value="Add comment"/>
             </div>
         </form>
     </div>

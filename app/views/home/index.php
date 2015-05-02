@@ -10,6 +10,6 @@
         <time class='text-info' title='{$time}' datetime='{$time}'>{$time->diffForHumans()}</time>
         <div class='post-content'>{$post['content']}</div>
     </article>";
-    }
+}
     ?>
 </section>

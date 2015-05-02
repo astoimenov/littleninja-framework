@@ -2,17 +2,11 @@
 
 use LittleNinja\Lib\Auth;
 use LittleNinja\Lib\Redirect;
-use LittleNinja\Lib\View;
 
-/**
- * @property string templateName
- */
 class BaseController
 {
-    protected $layout;
     protected $validationErrors;
     protected $formValues;
-    protected $isLoggedIn;
 
     public function __construct(
         $className = 'LittleNinja\Controllers\BaseController',
@@ -21,23 +15,15 @@ class BaseController
     )
     {
         $this->className = $className;
-
-        include_once LN_ROOT_DIR . '/app/models/' . $model . '.php';
         $modelClass = '\LittleNinja\Models\\' . $model;
-
         $this->model = new $modelClass(array('table' => $table));
 
         $auth = Auth::getInstance();
-        $loggedUser = $auth->getLoggedUser();
-        $this->loggedUser = $loggedUser;
+        $this->loggedUser = $auth->getLoggedUser();
 
-        $this->layout = LN_ROOT_DIR . '/app/views/layouts/default.php';
-    }
-
-    public function index()
-    {
-        $view = new View();
-        $view->render('master/home');
+        if (!isset($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = base64_encode(openssl_random_pseudo_bytes(32));
+        }
     }
 
     public function isAdmin()
@@ -48,12 +34,9 @@ class BaseController
         }
     }
 
-    public function authorize()
+    public function addErrorMessage($msg)
     {
-        if (empty($this->loggedUser)) {
-            $this->addErrorMessage('Please login first');
-            Redirect::to('/auth/login');
-        }
+        $this->addMessage($msg, 'error');
     }
 
     public function addMessage($msg, $type)
@@ -63,6 +46,23 @@ class BaseController
         }
 
         array_push($_SESSION['messages'], array('text' => $msg, 'type' => $type));
+    }
+
+    public function checkCsrfToken()
+    {
+        if ($_SESSION['csrf_token'] !== $_POST['_token']) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function authorize()
+    {
+        if (empty($this->loggedUser)) {
+            $this->addErrorMessage('Please login first');
+            Redirect::to('/auth/login');
+        }
     }
 
     public function addValidationError($field, $message)
@@ -88,10 +88,5 @@ class BaseController
     public function addInfoMessage($msg)
     {
         $this->addMessage($msg, 'info');
-    }
-
-    public function addErrorMessage($msg)
-    {
-        $this->addMessage($msg, 'error');
     }
 }

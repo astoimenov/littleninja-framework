@@ -1,5 +1,5 @@
 <form method="POST" action="/posts/update/<?php echo $data['id'] ?>" accept-charset="UTF-8">
-    <input name="_token" type="hidden" value="FzU5DwntcIawvlO0RU6PapBqBofKmkQHkS6fjdGN">
+    <input name="_token" type="hidden" value="<?= $_SESSION['csrf_token'] ?>">
 
     <div class="form-group">
         <label for="title">Title:</label>

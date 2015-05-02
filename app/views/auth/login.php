@@ -5,17 +5,15 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Login</div>
                 <div class="panel-body">
-                    <!-- Display errors here -->
-
                     <form class="form-horizontal" role="form" method="POST" action="">
-                        <input type="hidden" name="_token" value=""/>
+                        <input type="hidden" name="_token" value="<?= $_SESSION['csrf_token'] ?>"/>
 
                         <div class="form-group">
                             <label for="email" class="col-md-4 control-label">E-Mail Address</label>
 
                             <div class="col-md-6">
                                 <input type="email" class="form-control" name="email" id="email"
-                                    value="<?php if (isset($_POST['email'])) echo $_POST['email']; ?>" />
+                                       value="<?php if (isset($_POST['email'])) echo $_POST['email']; ?>"/>
                                 <?php if (isset($errors['email'])) : ?>
                                     <div class="text-danger">
                                         <?= $errors['email'] ?>
@@ -28,7 +26,7 @@
                             <label for="password" class="col-md-4 control-label">Password</label>
 
                             <div class="col-md-6">
-                                <input type="password" class="form-control" name="password" id="password" />
+                                <input type="password" class="form-control" name="password" id="password"/>
                                 <?php if (isset($errors['password'])) : ?>
                                     <div class="text-danger">
                                         <?= $errors['password'] ?>

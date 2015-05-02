@@ -14,18 +14,21 @@
 
             <ul class="nav navbar-nav">
                 <?php if (!empty($this->loggedUser['email']) && $this->loggedUser['role'] === 'admin') : ?>
-                <li>
-                    <a class="selected" href="/posts/index">Posts</a>
-                </li>
-                <li>
-                    <a href="/posts/create">Add new post</a>
-                </li>
+                    <li>
+                        <a href="/posts/index">Posts</a>
+                    </li>
+                    <li>
+                        <a href="/posts/create">Add new post</a>
+                    </li>
+                    <li>
+                        <a href="/users/index">Users</a>
+                    </li>
                 <?php endif; ?>
             </ul>
 
             <div class="nav navbar-nav navbar-right">
                 <?php if (!empty($this->loggedUser['email'])) : ?>
-                    <?= '<li><a href="/users/show/' . $this->loggedUser['id'] . '">'
+                    <?= '<li><a href="/users/edit/' . $this->loggedUser['id'] . '">'
                     . htmlspecialchars($this->loggedUser['email'], ENT_QUOTES | ENT_HTML5, 'UTF-8')
                     . '</a></li>'
                     . '<li><a href="/auth/logout">Logout</a></li>' ?>

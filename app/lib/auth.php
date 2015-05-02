@@ -120,7 +120,7 @@ class Auth
             $this->errors['password'] = MESSAGE_PASSWORD_TOO_SHORT;
         }
         if ($password !== $confirm_password) {
-            $this->errors['confirm_password'] = MESSAGE_PASSWORD_BAD_CONFIRM;
+            $this->errors['password_confirmation'] = MESSAGE_PASSWORD_BAD_CONFIRM;
         }
 
         if (self::databaseConnection() && empty($this->errors)) {

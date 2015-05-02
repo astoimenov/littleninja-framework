@@ -1,6 +1,7 @@
 <?php namespace LittleNinja\Controllers;
 
 use LittleNinja\Lib\Redirect;
+use LittleNinja\Lib\View;
 use LittleNinja\Models\Comment;
 use LittleNinja\Models\Post;
 
@@ -31,7 +32,7 @@ class CommentsController extends BaseController
             }
         }
 
-        if (empty($this->errors)) {
+        if (empty($this->errors) && $this->checkCsrfToken()) {
             if (empty($this->loggedUser)) {
                 $comment['visitor_name'] = htmlspecialchars($_POST['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
                 $comment['visitor_email'] = htmlspecialchars($_POST['email'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
@@ -41,12 +42,14 @@ class CommentsController extends BaseController
 
             $comment['content'] = htmlspecialchars($_POST['content'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
             $comment['blog_posts_id'] = $_POST['blog_post_id'];
-            Comment::store($comment);
 
-            Redirect::to('/posts/show/' . Post::getById($comment['blog_posts_id'])['slug']);
+            $commentModel = new Comment();
+            $commentModel->store($comment);
+
+            Redirect::to('/posts/show/' . $_POST['slug']);
         }
 
-        View::render('posts/show');
+        PostsController::show($_POST['slug']);
     }
 
     public function edit($slug)
@@ -66,6 +69,7 @@ class CommentsController extends BaseController
         $post['id'] = $id;
         $post['title'] = htmlspecialchars($_POST['title'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $post['content'] = htmlspecialchars($_POST['content'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
         $postModel = new Post();
         $postModel->update($post);
 
@@ -75,6 +79,7 @@ class CommentsController extends BaseController
     public function delete($id)
     {
         $this->isAdmin();
+
         $postModel = new Post();
         $postModel->destroy($id);
 
