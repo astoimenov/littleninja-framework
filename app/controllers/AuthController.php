@@ -1,52 +1,47 @@
 <?php namespace LittleNinja\Controllers;
 
 use LittleNinja\Lib\Auth;
+use LittleNinja\Lib\Redirect;
+use LittleNinja\Lib\View;
 
-/**
- * @property bool isLoggedIn
- */
 class AuthController extends BaseController
 {
-    public $registrationSuccessful = false;
-    public $verificationSuccessful = false;
-
     public function __construct()
     {
-        parent::__construct(get_class(), 'BaseModel', '/app/views/auth/');
+        parent::__construct(get_class(), 'BaseModel');
     }
 
     public function register()
     {
-        if (!empty($_POST['email']) || !empty($_POST['pass'])) {
+        if (!empty($_POST['submit']) && $this->checkCsrfToken()) {
             $name = $_POST['name'];
             $email = $_POST['email'];
-            $password = $_POST['pass'];
+            $password = $_POST['password'];
             $passRepeat = $_POST['password_confirmation'];
 
             $auth = Auth::getInstance();
-
-            $auth->register($name, $email, $password, $passRepeat);
+            if ($auth->register($name, $email, $password, $passRepeat)) {
+                Redirect::to('/auth/login');
+            }
         }
 
-        $this->templateName = LN_ROOT_DIR . $this->viewsDir . 'register.php';
-        include_once $this->layout;
+        View::render('auth/register');
     }
 
     public function login()
     {
-        if (!(empty($_POST['email']) || empty($_POST['pass']))) {
+        if (!empty($_POST['submit']) && $this->checkCsrfToken()) {
             $email = $_POST['email'];
-            $password = $_POST['pass'];
+            $password = $_POST['password'];
 
             $auth = Auth::getInstance();
 
-            $this->isLoggedIn = $auth->login($email, $password);
-            header('Location: /');
-            exit;
+            if ($auth->login($email, $password)) {
+                Redirect::home();
+            }
         }
 
-        $this->templateName = LN_ROOT_DIR . $this->viewsDir . 'login.php';
-        include_once $this->layout;
+        View::render('auth/login');
     }
 
     public function logout()

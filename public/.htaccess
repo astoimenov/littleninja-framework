@@ -11,6 +11,6 @@
     # Handle Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^favicon\.(gif|ico|png|jpe?g)$ favicon.ico [L,NC]
+    RewriteRule ^favicon\.(gif|ico|png|jpe?g)$ /favicon.ico [L,NC]
     RewriteRule ^ index.php [L]
 </IfModule>

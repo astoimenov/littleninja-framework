@@ -15,42 +15,42 @@ class BaseModel
         );
 
         $args = array_merge($defaults, $args);
-
         if (!isset($args['table'])) {
             die('Table not defined.');
         }
 
         extract($args);
-
         $this->table = $table;
         $this->limit = $limit;
-
         $dbObject = Database::getInstance();
         $this->db = $dbObject::getDb();
     }
 
-    public function find($id)
+    public function getById($id)
     {
-        return $this->select(['where' => 'id = ' . $id]);
+        return self::get(['where' => 'id = ' . $id]);
     }
 
-    public function select($args = array())
+    public function get($args = array())
     {
         $defaults = array(
             'table' => $this->table,
             'limit' => $this->limit,
             'where' => '',
-            'columns' => '*'
+            'columns' => '*',
+            'order_by' => '',
+            'order' => 'ASC'
         );
 
         $args = array_merge($defaults, $args);
-
         extract($args);
-
         $query = "SELECT {$columns} FROM {$table}";
-
         if (!empty($where)) {
             $query .= " WHERE {$where}";
+        }
+
+        if (!empty($order_by)) {
+            $query .= " ORDER BY {$order_by} {$order}";
         }
 
         if (!empty($limit)) {
@@ -58,7 +58,20 @@ class BaseModel
         }
 
         $resultSet = $this->db->query($query);
-        $results = $this->processResults($resultSet);
+        $results = self::processResults($resultSet);
+
+        return $results;
+    }
+
+    protected function processResults($resultSet)
+    {
+        $results = array();
+
+        if (!empty($resultSet) && $resultSet->num_rows > 0) {
+            while ($row = $resultSet->fetch_assoc()) {
+                $results[] = $row;
+            }
+        }
 
         return $results;
     }
@@ -74,9 +87,13 @@ class BaseModel
         $keys = implode($keys, ',');
         $values = implode($values, ',');
         $query = "INSERT INTO {$this->table}($keys) VALUES($values)";
-        $this->db->query($query);
 
-        return $this->db->affected_rows;
+        if ($this->db->query($query)) {
+            return $this->db->affected_rows;
+        } else {
+            var_dump($this->db->error);
+            die;
+        }
     }
 
     public function update($element)
@@ -101,22 +118,20 @@ class BaseModel
         return $this->db->affected_rows;
     }
 
-    protected function processResults($resultSet)
+    public function destroy($id)
     {
-        $results = array();
-
-        if (!empty($resultSet) && $resultSet->num_rows > 0) {
-            while ($row = $resultSet->fetch_assoc()) {
-                $results[] = $row;
-            }
+        $query = "DELETE FROM {$this->table} WHERE id = {$id}";
+        if ($this->db->query($query)) {
+            return $this->db->affected_rows;
+        } else {
+            var_dump($this->db->error);
+            die;
         }
-
-        return $results;
     }
 
     public function getByName($name)
     {
-        return $this->select(array(
+        return $this->get(array(
             'where' => "name = '" . $name . "'"
         ));
     }

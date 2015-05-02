@@ -1,39 +1,92 @@
 <?php namespace LittleNinja\Controllers;
 
 use LittleNinja\Lib\Auth;
+use LittleNinja\Lib\Redirect;
 
-/**
- * @property string templateName
- */
 class BaseController
 {
-    protected $layout;
-    protected $viewsDir;
+    protected $validationErrors;
+    protected $formValues;
 
     public function __construct(
         $className = 'LittleNinja\Controllers\BaseController',
         $model = 'BaseModel',
-        $viewsDir = '/app/views/master/'
+        $table = 'none'
     )
     {
-        $this->viewsDir = $viewsDir;
         $this->className = $className;
-
-        include_once LN_ROOT_DIR . '/app/models/' . $model . '.php';
         $modelClass = '\LittleNinja\Models\\' . $model;
-
-        $this->model = new $modelClass(array('table' => 'none'));
+        $this->model = new $modelClass(array('table' => $table));
 
         $auth = Auth::getInstance();
-        $loggedUser = $auth->getLoggedUser();
-        $this->loggedUser = $loggedUser;
+        $this->loggedUser = $auth->getLoggedUser();
 
-        $this->layout = LN_ROOT_DIR . '/app/views/layouts/default.php';
+        if (!isset($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = base64_encode(openssl_random_pseudo_bytes(32));
+        }
     }
 
-    public function index()
+    public function isAdmin()
     {
-        $this->templateName = LN_ROOT_DIR . $this->viewsDir . 'index.php';
-        include_once $this->layout;
+        if ($this->loggedUser['role'] !== 'admin') {
+            $this->addErrorMessage('You are not authorized');
+            Redirect::to('/home/index');
+        }
+    }
+
+    public function addErrorMessage($msg)
+    {
+        $this->addMessage($msg, 'error');
+    }
+
+    public function addMessage($msg, $type)
+    {
+        if (!isset($_SESSION['messages'])) {
+            $_SESSION['messages'] = array();
+        }
+
+        array_push($_SESSION['messages'], array('text' => $msg, 'type' => $type));
+    }
+
+    public function checkCsrfToken()
+    {
+        if ($_SESSION['csrf_token'] !== $_POST['_token']) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function authorize()
+    {
+        if (empty($this->loggedUser)) {
+            $this->addErrorMessage('Please login first');
+            Redirect::to('/auth/login');
+        }
+    }
+
+    public function addValidationError($field, $message)
+    {
+        $this->validationErrors[$field] = $message;
+    }
+
+    public function getValidationError($field)
+    {
+        return $this->validationErrors[$field];
+    }
+
+    public function addFieldValue($field, $value)
+    {
+        $this->formValues[$field] = $value;
+    }
+
+    public function getFieldValue($field)
+    {
+        return $this->formValues[$field];
+    }
+
+    public function addInfoMessage($msg)
+    {
+        $this->addMessage($msg, 'info');
     }
 }
