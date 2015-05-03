@@ -89,6 +89,10 @@ class PostsController extends BaseController
         $postModel = new Post();
         $post = $postModel->getBySlug($slug)[0];
 
+        $postTagModel = new BlogPostsTags();
+        $tags = $postTagModel->getTags($post['id']);
+        $post['tags'] = $tags;
+
         View::render('posts/edit', $post);
     }
 

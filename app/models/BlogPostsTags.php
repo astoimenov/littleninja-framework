@@ -15,6 +15,14 @@ class BlogPostsTags extends BaseModel
         ));
     }
 
+    public function getPostIds($tagId)
+    {
+        return $this->get(array(
+            'where' => "tag_id = '" . $tagId . "'",
+            'columns' => 'blog_post_id'
+        ));
+    }
+
     public function getTags($postId)
     {
         $tagIds = self::getTagIds($postId);
@@ -25,6 +33,18 @@ class BlogPostsTags extends BaseModel
         }
 
         return $tags;
+    }
+
+    public function getPosts($tagId)
+    {
+        $postIds = self::getPostIds($tagId);
+        $postModel = new Post();
+        $posts = array();
+        foreach ($postIds as $key => $postId) {
+            $posts[] = $postModel->getById((int)$postId['blog_post_id']);
+        }
+
+        return $posts;
     }
 
     public function storePostTags($post, $tags)

@@ -23,6 +23,8 @@ body {
       padding: 5px; }
     body main th, body main td {
       text-align: center; }
+    body main .select2-container--default .select2-selection--multiple .select2-selection__choice {
+      color: #BF5A16 !important; }
   body footer {
     background-color: #2B3E50;
     -webkit-box-shadow: #1c2a3d 0 -4px 8px 0;

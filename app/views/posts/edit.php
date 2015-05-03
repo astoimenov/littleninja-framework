@@ -13,6 +13,21 @@
     </div>
 
     <div class="form-group">
+        <label for="tags">Tags:</label>
+
+        <select name="tags[]" id="tags" class="form-control" multiple="multiple">
+            <?php foreach ($data['tags'] as $tag) : ?>
+                <option value="<?= $tag['name'] ?>" selected><?= $tag['name'] ?></option>
+            <?php endforeach; ?>
+        </select>
+        <?php if (isset($this->errors['tags'])) : ?>
+            <div class="text-danger">
+                <?= $this->errors['tags'] ?>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <div class="form-group">
         <input class="btn btn-primary form-control" type="submit" value="Edit article">
     </div>
 </form>
