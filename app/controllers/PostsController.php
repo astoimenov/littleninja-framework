@@ -3,8 +3,10 @@
 use Carbon\Carbon;
 use LittleNinja\Lib\Redirect;
 use LittleNinja\Lib\View;
+use LittleNinja\Models\BlogPostsTags;
 use LittleNinja\Models\Comment;
 use LittleNinja\Models\Post;
+use LittleNinja\Models\Tag;
 use Stringy\Stringy;
 
 class PostsController extends BaseController
@@ -30,7 +32,10 @@ class PostsController extends BaseController
     {
         $this->isAdmin();
 
-        View::render('posts/create');
+        $tagModel = new Tag();
+        $tags = $tagModel->get();
+
+        View::render('posts/create', $tags);
     }
 
     public function store()
@@ -47,11 +52,13 @@ class PostsController extends BaseController
         if (empty($this->errors) && $this->checkCsrfToken()) {
             $post['title'] = htmlspecialchars($_POST['title'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
             $post['slug'] = Stringy::create($post['title'])->slugify('-');
-            $post['content'] = htmlspecialchars($_POST['content'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $post['users_id'] = $this->loggedUser['id'];
+            $post['content'] = nl2br(htmlspecialchars($_POST['content'], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            $post['user_id'] = $this->loggedUser['id'];
             $post['created_at'] = Carbon::now()->timezone('Europe/Sofia');
-            $postModel = new Post();
-            $postModel->store($post);
+
+            $tags = $_POST['tags'];
+            $postTagModel = new BlogPostsTags();
+            $postTagModel->storePostTags($post, $tags);
 
             Redirect::to('/home/index');
         }
@@ -63,6 +70,11 @@ class PostsController extends BaseController
     {
         $postModel = new Post();
         $post = $postModel->getBySlug($slug)[0];
+        $this->title = $post['title'];
+
+        $postTagModel = new BlogPostsTags();
+        $tags = $postTagModel->getTags($post['id']);
+        $post['tags'] = $tags;
 
         $commentModel = new Comment();
         $post['comments'] = $commentModel->getByPostId($post['id']);

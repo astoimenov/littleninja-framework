@@ -24,10 +24,7 @@ class CommentsController extends BaseController
             if (strlen($_POST['name']) < 3) {
                 $this->errors['name'] = MESSAGE_NAME_BAD_LENGTH;
             }
-            if (strlen($_POST['email']) < 3) {
-                $this->errors['email'] = MESSAGE_EMAIL_EMPTY;
-            }
-            if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+            if (!empty($_POST['email']) && !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
                 $this->errors['email'] = MESSAGE_EMAIL_INVALID;
             }
         }
@@ -37,11 +34,11 @@ class CommentsController extends BaseController
                 $comment['visitor_name'] = htmlspecialchars($_POST['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
                 $comment['visitor_email'] = htmlspecialchars($_POST['email'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
             } else {
-                $comment['users_id'] = $this->loggedUser['id'];
+                $comment['user_id'] = $this->loggedUser['id'];
             }
 
-            $comment['content'] = htmlspecialchars($_POST['content'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $comment['blog_posts_id'] = $_POST['blog_post_id'];
+            $comment['content'] = nl2br(htmlspecialchars($_POST['content'], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+            $comment['blog_post_id'] = $_POST['blog_post_id'];
 
             $commentModel = new Comment();
             $commentModel->store($comment);

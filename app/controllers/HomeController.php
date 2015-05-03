@@ -17,6 +17,6 @@ class HomeController extends BaseController
         $postModel = new Post();
         $posts = $postModel->get($args);
 
-        View::render('home/index', $posts);
+        View::renderWithSidebar('home/index', $posts);
     }
 }

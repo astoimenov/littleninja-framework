@@ -81,7 +81,7 @@ class BaseModel
         $keys = array_keys($element);
         $values = array();
         foreach ($element as $key => $value) {
-            $values[] = "'" . $this->db->real_escape_string($value) . "'";
+            $values[] = "'" . $this->db->real_escape_string(trim($value)) . "'";
         }
 
         $keys = implode($keys, ',');
@@ -89,7 +89,7 @@ class BaseModel
         $query = "INSERT INTO {$this->table}($keys) VALUES($values)";
 
         if ($this->db->query($query)) {
-            return $this->db->affected_rows;
+            return $this->db->insert_id;
         } else {
             var_dump($this->db->error);
             die;
@@ -127,12 +127,5 @@ class BaseModel
             var_dump($this->db->error);
             die;
         }
-    }
-
-    public function getByName($name)
-    {
-        return $this->get(array(
-            'where' => "name = '" . $name . "'"
-        ));
     }
 }

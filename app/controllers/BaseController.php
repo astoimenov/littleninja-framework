@@ -7,6 +7,7 @@ class BaseController
 {
     protected $validationErrors;
     protected $formValues;
+    public $title = "LittleNinja's Blog";
 
     public function __construct(
         $className = 'LittleNinja\Controllers\BaseController',

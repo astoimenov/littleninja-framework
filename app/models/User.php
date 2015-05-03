@@ -21,36 +21,10 @@ class User extends BaseModel
         }
     }
 
-    public function update($element)
+    public function getByName($name)
     {
-        if (!isset($element['id'])) {
-            die('Wrong model set.');
-        }
-
-        $query = "UPDATE users SET ";
-        foreach ($element as $key => $value) {
-            if ($key === 'id') {
-                continue;
-            }
-
-            $query .= "$key = '" . $this->db->real_escape_string($value) . "',";
-        }
-
-        $query = rtrim($query, ',');
-        $query .= " WHERE id = {$element['id']}";
-        $this->db->query($query);
-
-        return $this->db->affected_rows;
-    }
-
-    public function destroy($id)
-    {
-        $query = "DELETE FROM users WHERE id = {$id}";
-        if ($this->db->query($query)) {
-            return $this->db->affected_rows;
-        } else {
-            var_dump($this->db->error);
-            die;
-        }
+        return $this->get(array(
+            'where' => "name = '" . $name . "'"
+        ));
     }
 }

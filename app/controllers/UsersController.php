@@ -19,7 +19,9 @@ class UsersController extends BaseController
     {
         $this->isAdmin();
 
-        $users = $this->userModel->get();
+        $users = $this->userModel->get(array(
+            'columns' => 'id, name, email, role'
+        ));
 
         View::render('users/index', $users);
     }
@@ -37,17 +39,17 @@ class UsersController extends BaseController
 
     public function update($id)
     {
-        $this->isAdmin();
+        if ($this->loggedUser['role'] === 'admin' || $this->loggedUser['id'] == $id) {
+            if ($this->checkCsrfToken()) {
+                $user['id'] = $id;
+                $user['name'] = htmlspecialchars($_POST['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $user['email'] = htmlspecialchars($_POST['email'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $user['role'] = $_POST['role'];
 
-        if ($this->checkCsrfToken()) {
-            $user['id'] = $id;
-            $user['name'] = htmlspecialchars($_POST['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $user['email'] = htmlspecialchars($_POST['email'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $user['role'] = $_POST['role'];
+                $this->userModel->update($user);
 
-            $this->userModel->update($user);
-
-            Redirect::to('/users/index');
+                Redirect::to('/users/index');
+            }
         }
 
         Redirect::home();

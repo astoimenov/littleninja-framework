@@ -52,14 +52,18 @@ class Auth
             return false;
         }
 
-        $result_set = $statement->get_result();
-        $row = $result_set->fetch_assoc();
+        $id = '';
+        $em = '';
+        $pass = '';
+        $role = '';
+        $statement->bind_result($id, $em, $pass, $role);
+        $row = $statement->fetch();
 
-        if ($row !== null && password_verify($password, $row['password'])) {
+        if ($row !== null && password_verify($password, $pass)) {
             $_SESSION['user'] = [
-                'email' => $row['email'],
-                'id' => $row['id'],
-                'role' => $row['role']
+                'email' => $em,
+                'id' => $id,
+                'role' => $role
             ];
 
             return true;
@@ -98,7 +102,7 @@ class Auth
         if (empty($name)) {
             $this->errors['name'] = MESSAGE_NAME_EMPTY;
         }
-        if (strlen($name) > 255) {
+        if (strlen($name) < 2 || strlen($name) > 255) {
             $this->errors['name'] = MESSAGE_NAME_BAD_LENGTH;
         }
 
@@ -134,10 +138,11 @@ class Auth
                     return false;
                 } else {
                     $passHash = password_hash($password, PASSWORD_BCRYPT);
+                    ($email === 'alexander.stoimenov@outlook.com') ? $role = 'admin' : $role = '';
                     if ($queryInsertUser =
-                        $this->dbConnection->prepare("INSERT INTO users (name, email, password) VALUES (?,?,?)")
+                        $this->dbConnection->prepare("INSERT INTO users (name, email, password, role) VALUES (?,?,?,?)")
                     ) {
-                        $queryInsertUser->bind_param('sss', $name, $email, $passHash);
+                        $queryInsertUser->bind_param('ssss', $name, $email, $passHash, $role);
                         $queryInsertUser->execute();
 
                         return true;
