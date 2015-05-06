@@ -15,8 +15,10 @@ class TagsController extends BaseController
     {
         $postTagModel = new BlogPostsTags();
         $posts = $postTagModel->getPosts($id);
+
         $tagModel = new Tag();
         $posts['tag'] = $tagModel->getById($id)[0]['name'];
+        $this->title = 'Tag:' . $posts['tag'] . ' | ' . LN_SITE_NAME;
 
         View::renderWithSidebar('tags/show', $posts);
     }

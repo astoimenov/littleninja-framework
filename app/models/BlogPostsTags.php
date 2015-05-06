@@ -56,7 +56,7 @@ class BlogPostsTags extends BaseModel
                 if ($oldTag = $tagModel->getByName($tag)) {
                     $tagIds[] = (int)$oldTag[0]['id'];
                 } else {
-                    $newTag['name'] = htmlspecialchars($tag, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    $newTag['name'] = self::sanitize($tag);
                     $tagIds[] = $tagModel->store($newTag);
                 }
             }

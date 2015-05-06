@@ -20,8 +20,9 @@ class User extends BaseModel
 
             return $results;
         } else {
-            var_dump($this->db->error);
-            die;
+            self::reportDbError();
+
+            return false;
         }
     }
 
@@ -36,17 +37,22 @@ class User extends BaseModel
     {
         BaseController::validateUserInput($element['name'], $element['email']);
 
-        if ($queryCheckUser = $this->db->prepare("SELECT email FROM users WHERE email=?")) {
-            $queryCheckUser->bind_param('s', $element['email']);
-            $queryCheckUser->execute();
-            $result = $queryCheckUser->fetch();
-            if (count($result) > 0) {
+        $query = "SELECT id, email FROM users WHERE email='{$element['email']}'";
+        if ($resultSet = $this->db->query($query)) {
+            $result = self::processResults($resultSet)[0];
+            if (count($result) > 0 && $result['id'] !== $element['id']) {
                 $this->errors['email'] = MESSAGE_EMAIL_ALREADY_EXISTS;
 
                 return false;
             } else {
-                self::update($element);
+                BaseModel::update($element);
+
+                return true;
             }
+        } else {
+            self::reportDbError();
+
+            return false;
         }
     }
 }

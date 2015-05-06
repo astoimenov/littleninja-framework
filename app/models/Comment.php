@@ -18,8 +18,9 @@ class Comment extends BaseModel
 
             return $results;
         } else {
-            var_dump($this->db->error);
-            die;
+            self::reportDbError();
+
+            return false;
         }
     }
 }

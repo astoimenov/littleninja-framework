@@ -14,8 +14,8 @@ class AuthController extends BaseController
     public function register()
     {
         if (!empty($_POST['submit']) && $this->checkCsrfToken()) {
-            $name = htmlspecialchars($_POST['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $email = htmlspecialchars($_POST['email'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $name = self::sanitize($_POST['name']);
+            $email = self::sanitize($_POST['email']);
             $password = $_POST['password'];
             $passRepeat = $_POST['password_confirmation'];
 

@@ -31,7 +31,7 @@
             <div class="nav navbar-nav navbar-right">
                 <?php if (!empty($this->loggedUser['email'])) : ?>
                     <?= '<li><a href="/users/edit/' . $this->loggedUser['id'] . '">'
-                    . htmlspecialchars($this->loggedUser['email'], ENT_QUOTES | ENT_HTML5, 'UTF-8')
+                    . $this->loggedUser['email']
                     . '</a></li>'
                     . '<li><a href="/auth/logout">Logout</a></li>' ?>
                 <?php else : ?>

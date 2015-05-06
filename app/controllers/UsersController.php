@@ -18,6 +18,7 @@ class UsersController extends BaseController
     public function index()
     {
         $this->isAdmin();
+        $this->title = 'Users | ' . LN_SITE_NAME;
 
         $users = $this->userModel->get(array(
             'columns' => 'id, name, email, role'
@@ -28,6 +29,8 @@ class UsersController extends BaseController
 
     public function edit($id)
     {
+        $this->title = 'Edit user | ' . LN_SITE_NAME;
+
         if ($this->loggedUser['role'] === 'admin' || $this->loggedUser['id'] == $id) {
             $user = $this->userModel->getById($id);
 
@@ -41,15 +44,15 @@ class UsersController extends BaseController
     {
         if ($this->loggedUser['role'] === 'admin' || $this->loggedUser['id'] == $id) {
             $user['id'] = $id;
-            $user['name'] = htmlspecialchars($_POST['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $user['email'] = htmlspecialchars($_POST['email'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $user['name'] = self::sanitize($_POST['name']);
+            $user['email'] = self::sanitize($_POST['email']);
             if ($this->loggedUser['role'] === 'admin') {
                 $user['role'] = $_POST['role'];
             }
 
             if ($this->checkCsrfToken() && empty($this->errors)) {
                 if ($this->userModel->update($user)) {
-                    Redirect::to('/users/index');
+                    Redirect::home();
                 } else {
                     $user['errors'] = $this->userModel->errors;
 

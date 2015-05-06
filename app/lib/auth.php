@@ -44,7 +44,7 @@ class Auth
         self::databaseConnection();
         $db = $this->dbConnection;
 
-        $query = "SELECT id, email, password, role FROM users WHERE email = ? LIMIT 1";
+        $query = 'SELECT id, email, password, role FROM users WHERE email = ? LIMIT 1';
         if ($statement = $db->prepare($query)) {
             $statement->bind_param('s', $email);
             $statement->execute();
@@ -111,7 +111,7 @@ class Auth
         }
 
         if (self::databaseConnection() && empty($this->errors)) {
-            if ($queryCheckUser = $this->dbConnection->prepare("SELECT email FROM users WHERE email=?")) {
+            if ($queryCheckUser = $this->dbConnection->prepare('SELECT email FROM users WHERE email=?')) {
                 $queryCheckUser->bind_param('s', $email);
                 $queryCheckUser->execute();
                 $result = $queryCheckUser->fetch();
@@ -123,7 +123,7 @@ class Auth
                     $passHash = password_hash($password, PASSWORD_BCRYPT);
                     ($email === 'alexander.stoimenov@outlook.com') ? $role = 'admin' : $role = '';
                     if ($queryInsertUser =
-                        $this->dbConnection->prepare("INSERT INTO users (name, email, password, role) VALUES (?,?,?,?)")
+                        $this->dbConnection->prepare('INSERT INTO users (name, email, password, role) VALUES (?,?,?,?)')
                     ) {
                         $queryInsertUser->bind_param('ssss', $name, $email, $passHash, $role);
                         $queryInsertUser->execute();

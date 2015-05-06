@@ -65,6 +65,8 @@ class BaseModel
             return $results;
         } else {
             $this->reportDbError();
+
+            return false;
         }
     }
 
@@ -97,6 +99,8 @@ class BaseModel
             return $this->db->insert_id;
         } else {
             $this->reportDbError();
+
+            return false;
         }
     }
 
@@ -122,6 +126,8 @@ class BaseModel
             return $this->db->affected_rows;
         } else {
             $this->reportDbError();
+
+            return false;
         }
     }
 
@@ -133,12 +139,17 @@ class BaseModel
             return $this->db->affected_rows;
         } else {
             $this->reportDbError();
+
+            return false;
         }
     }
 
-    private function reportDbError()
+    protected function reportDbError()
     {
-        error_reporting(E_USER_WARNING);
+        var_dump($this->db->error);
+        exit;
+
+        /*error_reporting(E_USER_WARNING);
         error_log(
             '[' . date("F j, Y, g:i a e O") . ']' . $this->db->error . PHP_EOL,
             3,
@@ -146,6 +157,6 @@ class BaseModel
         );
 
         View::render('errors/db');
-        exit;
+        exit;*/
     }
 }

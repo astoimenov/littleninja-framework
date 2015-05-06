@@ -6,11 +6,11 @@ use LittleNinja\Models\Tag;
 
 class BaseController
 {
-    protected $validationErrors;
-    protected $formValues;
-    public $title = "LittleNinja's Blog";
+    public $title = LN_SITE_NAME;
     public $tags = array();
     public $errors = array();
+    public $disabledPrev = false;
+    public $disabledNext = false;
 
     public function __construct(
         $className = 'LittleNinja\Controllers\BaseController',
@@ -36,23 +36,8 @@ class BaseController
     public function isAdmin()
     {
         if ($this->loggedUser['role'] !== 'admin') {
-            $this->addErrorMessage('You are not authorized');
             Redirect::to('/home/index');
         }
-    }
-
-    public function addErrorMessage($msg)
-    {
-        $this->addMessage($msg, 'error');
-    }
-
-    public function addMessage($msg, $type)
-    {
-        if (!isset($_SESSION['messages'])) {
-            $_SESSION['messages'] = array();
-        }
-
-        array_push($_SESSION['messages'], array('text' => $msg, 'type' => $type));
     }
 
     public function checkCsrfToken()
@@ -67,34 +52,8 @@ class BaseController
     public function authorize()
     {
         if (empty($this->loggedUser)) {
-            $this->addErrorMessage('Please login first');
             Redirect::to('/auth/login');
         }
-    }
-
-    public function addValidationError($field, $message)
-    {
-        $this->validationErrors[$field] = $message;
-    }
-
-    public function getValidationError($field)
-    {
-        return $this->validationErrors[$field];
-    }
-
-    public function addFieldValue($field, $value)
-    {
-        $this->formValues[$field] = $value;
-    }
-
-    public function getFieldValue($field)
-    {
-        return $this->formValues[$field];
-    }
-
-    public function addInfoMessage($msg)
-    {
-        $this->addMessage($msg, 'info');
     }
 
     public function validateUserInput($name, $email)
@@ -121,5 +80,22 @@ class BaseController
         }
 
         return array($name, $email);
+    }
+
+    protected static function sanitize($value)
+    {
+        $value = trim($value);
+        $sanitized = htmlspecialchars(trim($value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        return $sanitized;
+    }
+
+    public static function limit($value, $limit = 100, $end = '...')
+    {
+        if (mb_strlen($value) <= $limit) {
+            return $value;
+        }
+
+        return rtrim(mb_substr($value, 0, $limit, 'UTF-8')) . $end;
     }
 }
