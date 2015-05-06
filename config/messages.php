@@ -22,6 +22,6 @@ define('MESSAGE_CONTENT_EMPTY', 'The content cannot be empty');
 define('MESSAGE_TITLE_BAD_LENGTH', 'The title must be more than 2 characters.');
 define('MESSAGE_TITLE_EMPTY', 'The title cannot be empty');
 
-define("MESSAGE_USER_DOES_NOT_EXIST", "This user does not exist");
-define("MESSAGE_NAME_BAD_LENGTH", "Name cannot be shorter than 2 or longer than 255 characters");
-define("MESSAGE_NAME_EMPTY", "Name field cannot be empty");
+define('MESSAGE_USER_DOES_NOT_EXIST', 'This user does not exist');
+define('MESSAGE_NAME_BAD_LENGTH', 'Name cannot be shorter than 2 or longer than 255 characters');
+define('MESSAGE_NAME_EMPTY', 'Name field cannot be empty');
