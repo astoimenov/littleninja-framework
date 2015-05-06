@@ -1,5 +1,7 @@
 <?php namespace LittleNinja\Lib;
 
+use LittleNinja\Controllers\BaseController;
+
 class Auth
 {
     private static $isLoggedIn = false;
@@ -96,26 +98,7 @@ class Auth
 
     public function register($name, $email, $password, $confirm_password)
     {
-        $name = trim($name);
-        $email = trim($email);
-
-        if (empty($name)) {
-            $this->errors['name'] = MESSAGE_NAME_EMPTY;
-        }
-        if (strlen($name) < 2 || strlen($name) > 255) {
-            $this->errors['name'] = MESSAGE_NAME_BAD_LENGTH;
-        }
-
-        if (empty($email) || $email === null) {
-            $this->errors['email'] = MESSAGE_EMAIL_EMPTY;
-            $email = null;
-        }
-        if (strlen($email) > 255) {
-            $this->errors['email'] = MESSAGE_EMAIL_TOO_LONG;
-        }
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->errors['email'] = MESSAGE_EMAIL_INVALID;
-        }
+        list($name, $email) = BaseController::validateUserInput($name, $email);
 
         if (empty($password) || empty($confirm_password)) {
             $this->errors['password'] = MESSAGE_PASSWORD_EMPTY;

@@ -9,7 +9,7 @@ class Comment extends BaseModel
 
     public function getByPostId($id)
     {
-        $query = "SELECT comments.id,content,visitor_name,users.name FROM comments "
+        $query = "SELECT comments.id, content, visitor_name, users.name FROM comments "
             . "LEFT JOIN users ON user_id=users.id WHERE blog_post_id = '{$id}' ";
 
 

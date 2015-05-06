@@ -18,6 +18,6 @@ class TagsController extends BaseController
         $tagModel = new Tag();
         $posts['tag'] = $tagModel->getById($id)[0]['name'];
 
-        View::render('tags/show', $posts);
+        View::renderWithSidebar('tags/show', $posts);
     }
 }

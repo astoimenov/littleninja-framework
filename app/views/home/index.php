@@ -1,3 +1,4 @@
+<h2>All Posts</h2>
 <section class="articles col-sm-8">
     <?php foreach ($data as $post) {
         date_default_timezone_set('Europe/Sofia');

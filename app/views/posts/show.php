@@ -4,11 +4,16 @@
     <div>
         <?= $data['content'] ?>
     </div>
-    <ul>
+
+    <?php if (!empty($data['tags'])) : ?>
+    <hr/>
+    <h3>Tags</h3>
+    <ul id="tag_list">
         <?php foreach ($data['tags'] as $tag) : ?>
             <li><a href="/tags/show/<?= $tag['id'] ?>"><?= $tag['name'] ?></a></li>
         <?php endforeach; ?>
     </ul>
+    <?php endif; ?>
     <hr/>
     <div class="comments">
         <h3>Comments</h3>

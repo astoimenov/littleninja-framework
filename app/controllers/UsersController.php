@@ -40,19 +40,29 @@ class UsersController extends BaseController
     public function update($id)
     {
         if ($this->loggedUser['role'] === 'admin' || $this->loggedUser['id'] == $id) {
-            if ($this->checkCsrfToken()) {
-                $user['id'] = $id;
-                $user['name'] = htmlspecialchars($_POST['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                $user['email'] = htmlspecialchars($_POST['email'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $user['id'] = $id;
+            $user['name'] = htmlspecialchars($_POST['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $user['email'] = htmlspecialchars($_POST['email'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            if ($this->loggedUser['role'] === 'admin') {
                 $user['role'] = $_POST['role'];
-
-                $this->userModel->update($user);
-
-                Redirect::to('/users/index');
             }
-        }
 
-        Redirect::home();
+            if ($this->checkCsrfToken() && empty($this->errors)) {
+                if ($this->userModel->update($user)) {
+                    Redirect::to('/users/index');
+                } else {
+                    $user['errors'] = $this->userModel->errors;
+
+                    View::render('users/edit', $user);
+                }
+            } else {
+                $user['errors'] = $this->errors;
+
+                View::render('users/edit', $user);
+            }
+        } else {
+            Redirect::home();
+        }
     }
 
     public function delete($id)

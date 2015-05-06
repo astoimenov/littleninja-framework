@@ -2,12 +2,15 @@
 
 use LittleNinja\Lib\Auth;
 use LittleNinja\Lib\Redirect;
+use LittleNinja\Models\Tag;
 
 class BaseController
 {
     protected $validationErrors;
     protected $formValues;
     public $title = "LittleNinja's Blog";
+    public $tags = array();
+    public $errors = array();
 
     public function __construct(
         $className = 'LittleNinja\Controllers\BaseController',
@@ -25,6 +28,9 @@ class BaseController
         if (!isset($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = base64_encode(openssl_random_pseudo_bytes(32));
         }
+
+        $tagModel = new Tag();
+        $this->tags = $tagModel->getMostUsedTags();
     }
 
     public function isAdmin()
@@ -89,5 +95,31 @@ class BaseController
     public function addInfoMessage($msg)
     {
         $this->addMessage($msg, 'info');
+    }
+
+    public function validateUserInput($name, $email)
+    {
+        $name = trim($name);
+        $email = trim($email);
+
+        if (empty($name)) {
+            $this->errors['name'] = MESSAGE_NAME_EMPTY;
+        }
+        if (strlen($name) < 2 || strlen($name) > 255) {
+            $this->errors['name'] = MESSAGE_NAME_BAD_LENGTH;
+        }
+
+        if (empty($email) || $email === null) {
+            $this->errors['email'] = MESSAGE_EMAIL_EMPTY;
+            $email = null;
+        }
+        if (strlen($email) > 255) {
+            $this->errors['email'] = MESSAGE_EMAIL_TOO_LONG;
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->errors['email'] = MESSAGE_EMAIL_INVALID;
+        }
+
+        return array($name, $email);
     }
 }
