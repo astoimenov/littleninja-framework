@@ -29,15 +29,22 @@ class UsersController extends BaseController
 
     public function edit($id)
     {
+        $this->isAdmin();
         $this->title = 'Edit user | ' . LN_SITE_NAME;
 
-        if ($this->loggedUser['role'] === 'admin' || $this->loggedUser['id'] == $id) {
-            $user = $this->userModel->getById($id);
+        $user = $this->userModel->getById($id);
 
-            View::render('users/edit', $user);
-        } else {
-            Redirect::home();
-        }
+        View::render('users/edit', $user);
+    }
+
+    public function myprofile()
+    {
+        $this->title = 'My profile | ' . LN_SITE_NAME;
+
+        $id = $this->loggedUser['id'];
+        $user = $this->userModel->getById($id);
+
+        View::render('users/edit', $user);
     }
 
     public function update($id)

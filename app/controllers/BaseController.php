@@ -82,7 +82,7 @@ class BaseController
         return array($name, $email);
     }
 
-    protected static function sanitize($value)
+    public static function sanitize($value)
     {
         $value = trim($value);
         $sanitized = htmlspecialchars(trim($value), ENT_QUOTES | ENT_HTML5, 'UTF-8');

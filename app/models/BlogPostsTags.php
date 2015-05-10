@@ -1,5 +1,7 @@
 <?php namespace LittleNinja\Models;
 
+use LittleNinja\Controllers\BaseController;
+
 class BlogPostsTags extends BaseModel
 {
     public function __construct($args = array())
@@ -56,7 +58,7 @@ class BlogPostsTags extends BaseModel
                 if ($oldTag = $tagModel->getByName($tag)) {
                     $tagIds[] = (int)$oldTag[0]['id'];
                 } else {
-                    $newTag['name'] = self::sanitize($tag);
+                    $newTag['name'] = BaseController::sanitize($tag);
                     $tagIds[] = $tagModel->store($newTag);
                 }
             }

@@ -8,7 +8,7 @@
                 <span class="icon-bar"></span>
             </button>
             <h1>
-                <a class="navbar-brand" href="/home/index">LittleNinja's blog</a>
+                <a class="navbar-brand" href="/home/index"><?= LN_SITE_NAME ?></a>
             </h1>
         </div>
 
@@ -30,7 +30,7 @@
 
             <div class="nav navbar-nav navbar-right">
                 <?php if (!empty($this->loggedUser['email'])) : ?>
-                    <?= '<li><a href="/users/edit/' . $this->loggedUser['id'] . '">'
+                    <?= '<li><a href="/users/myprofile">'
                     . $this->loggedUser['email']
                     . '</a></li>'
                     . '<li><a href="/auth/logout">Logout</a></li>' ?>

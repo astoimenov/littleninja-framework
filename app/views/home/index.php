@@ -12,7 +12,9 @@
 
         echo "\n<article class='row' id='post-{$post['id']}'>
         <div class='row'>
-            <h3 class='col-sm-10'><a href='/posts/show/{$post['slug']}'>{$post['title']}</a></h3>
+            <h3 class='col-sm-10'>
+                <a class='second after before' href='/posts/show/{$post['slug']}'>{$post['title']}</a>
+            </h3>
 
         </div>
         <time class='text-info' title='{$time}' datetime='{$time}'>{$time->diffForHumans()}</time>
