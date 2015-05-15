@@ -1,6 +1,6 @@
 {
-    "name": "littleninja/php-mvc",
-    "description": "Basic PHP MVC project",
+    "name": "littleninja/littleninja-framework",
+    "description": "Simple MVC framework",
     "license": "MIT",
     "authors": [
         {
