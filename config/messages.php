@@ -19,7 +19,7 @@ define('MESSAGE_PASSWORD_WRONG', 'Wrong password. Try again.');
 define('MESSAGE_CONTENT_BAD_LENGTH', 'The content must be more than 2 characters.');
 define('MESSAGE_CONTENT_EMPTY', 'The content cannot be empty');
 
-define('MESSAGE_TITLE_BAD_LENGTH', 'The title must be more than 2 characters.');
+define('MESSAGE_TITLE_BAD_LENGTH', 'The title must be more than 2 characters and less than 45.');
 define('MESSAGE_TITLE_EMPTY', 'The title cannot be empty');
 
 define('MESSAGE_USER_DOES_NOT_EXIST', 'This user does not exist');

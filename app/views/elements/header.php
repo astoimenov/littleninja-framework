@@ -35,6 +35,14 @@
     <link rel="stylesheet" href="../../../styles/app.css"/>
     <link rel="stylesheet" href="../../../styles/underline.css"/>
     <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet"/>
+    <script src="//tinymce.cachefly.net/4.1/tinymce.min.js"></script>
+    <script>
+        tinymce.init({
+            plugins: 'link, image',
+            selector: 'textarea',
+            image_advtab: true
+        });
+    </script>
 </head>
 <body>
     <header>
