@@ -2,11 +2,19 @@
   font-family: BebasNeue;
   src: url("fonts/BebasNeue%20Book.otf"); }
 body {
-  padding-top: 60px; }
+  padding-top: 60px;
+  color: azure; }
+  body .select2-container {
+    color: #2B3E50 !important; }
+  body .disabled a {
+    pointer-events: none;
+    touch-action: none; }
   body h1, body h2, body h3 {
     font-family: BebasNeue, "Helvetica Neue", Helvetica, sans-serif;
     letter-spacing: 2px; }
-  body h1, body h2 {
+  body h1 {
+    margin-top: 0; }
+  body h2 {
     margin-top: 12px; }
   body h3 {
     margin-top: 9px;
@@ -21,8 +29,18 @@ body {
       background-color: #384d5f;
       margin-bottom: 5px;
       padding: 5px; }
+      body main article #tag_list {
+        display: inline-block;
+        list-style-type: none; }
+        body main article #tag_list li {
+          display: inline-block;
+          margin-right: 10px; }
+      body main article#sidebar .tags {
+        list-style-type: none; }
     body main th, body main td {
       text-align: center; }
+    body main .select2-container--default .select2-selection--multiple .select2-selection__choice {
+      color: #BF5A16 !important; }
   body footer {
     background-color: #2B3E50;
     -webkit-box-shadow: #1c2a3d 0 -4px 8px 0;

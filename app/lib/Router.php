@@ -9,7 +9,7 @@ class Router
 
         $controller = LN_DEFAULT_CONTROLLER;
         $action = LN_DEFAULT_ACTION;
-        $param = array();
+        $params = array();
         $adminRouting = false;
 
         if (!empty($request)) {
@@ -27,7 +27,7 @@ class Router
                     list($controller, $action) = $components;
 
                     if (isset($components[2])) {
-                        $param = $components[2];
+                        $params = explode('/', $components[2]);
                     }
                 }
             }
@@ -46,9 +46,9 @@ class Router
 
         $action = strtolower($action);
         if (method_exists($instance, $action)) {
-            call_user_func_array(array($instance, $action), array($param));
+            call_user_func_array(array($instance, $action), $params);
         } else {
-            call_user_func_array(array($instance, LN_DEFAULT_ACTION), array($param));
+            call_user_func_array(array($instance, LN_DEFAULT_ACTION), $params);
         }
     }
 }

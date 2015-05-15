@@ -1,7 +1,11 @@
 <?php namespace LittleNinja\Models;
 
+use LittleNinja\Controllers\BaseController;
+
 class User extends BaseModel
 {
+    public $errors;
+
     public function __construct($args = array())
     {
         parent::__construct(array('table' => 'users'));
@@ -9,48 +13,46 @@ class User extends BaseModel
 
     public function getById($id)
     {
-        $query = "SELECT id,name,email FROM users WHERE id = '{$id}'";
+        $query = "SELECT id, name, email, role FROM users WHERE id = '{$id}'";
 
         if ($resultSet = $this->db->query($query)) {
             $results = self::processResults($resultSet)[0];
 
             return $results;
         } else {
-            var_dump($this->db->error);
-            die;
+            self::reportDbError();
+
+            return false;
         }
+    }
+
+    public function getByName($name)
+    {
+        return $this->get(array(
+            'where' => "name = '" . $name . "'"
+        ));
     }
 
     public function update($element)
     {
-        if (!isset($element['id'])) {
-            die('Wrong model set.');
-        }
+        BaseController::validateUserInput($element['name'], $element['email']);
 
-        $query = "UPDATE users SET ";
-        foreach ($element as $key => $value) {
-            if ($key === 'id') {
-                continue;
+        $query = "SELECT id, email FROM users WHERE email='{$element['email']}'";
+        if ($resultSet = $this->db->query($query)) {
+            $result = self::processResults($resultSet)[0];
+            if (count($result) > 0 && $result['id'] !== $element['id']) {
+                $this->errors['email'] = MESSAGE_EMAIL_ALREADY_EXISTS;
+
+                return false;
+            } else {
+                BaseModel::update($element);
+
+                return true;
             }
-
-            $query .= "$key = '" . $this->db->real_escape_string($value) . "',";
-        }
-
-        $query = rtrim($query, ',');
-        $query .= " WHERE id = {$element['id']}";
-        $this->db->query($query);
-
-        return $this->db->affected_rows;
-    }
-
-    public function destroy($id)
-    {
-        $query = "DELETE FROM users WHERE id = {$id}";
-        if ($this->db->query($query)) {
-            return $this->db->affected_rows;
         } else {
-            var_dump($this->db->error);
-            die;
+            self::reportDbError();
+
+            return false;
         }
     }
 }

@@ -4,6 +4,16 @@
     <div>
         <?= $data['content'] ?>
     </div>
+
+    <?php if (!empty($data['tags'])) : ?>
+    <hr/>
+    <h3>Tags</h3>
+    <ul id="tag_list">
+        <?php foreach ($data['tags'] as $tag) : ?>
+            <li><a href="/tags/show/<?= $tag['id'] ?>"><?= $tag['name'] ?></a></li>
+        <?php endforeach; ?>
+    </ul>
+    <?php endif; ?>
     <hr/>
     <div class="comments">
         <h3>Comments</h3>
@@ -41,7 +51,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="email" class="control-label">E-Mail Address</label>
+                    <label for="email" class="control-label">E-Mail Address <small>(optional)</small></label>
 
                     <div class="">
                         <input type="email" class="form-control" name="email" id="email"

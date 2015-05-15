@@ -1,5 +1,7 @@
 <?php namespace LittleNinja\Lib;
 
+use LittleNinja\Controllers\BaseController;
+
 class Auth
 {
     private static $isLoggedIn = false;
@@ -42,7 +44,7 @@ class Auth
         self::databaseConnection();
         $db = $this->dbConnection;
 
-        $query = "SELECT id, email, password, role FROM users WHERE email = ? LIMIT 1";
+        $query = 'SELECT id, email, password, role FROM users WHERE email = ? LIMIT 1';
         if ($statement = $db->prepare($query)) {
             $statement->bind_param('s', $email);
             $statement->execute();
@@ -52,14 +54,18 @@ class Auth
             return false;
         }
 
-        $result_set = $statement->get_result();
-        $row = $result_set->fetch_assoc();
+        $id = '';
+        $em = '';
+        $pass = '';
+        $role = '';
+        $statement->bind_result($id, $em, $pass, $role);
+        $row = $statement->fetch();
 
-        if ($row !== null && password_verify($password, $row['password'])) {
+        if ($row !== null && password_verify($password, $pass)) {
             $_SESSION['user'] = [
-                'email' => $row['email'],
-                'id' => $row['id'],
-                'role' => $row['role']
+                'email' => $em,
+                'id' => $id,
+                'role' => $role
             ];
 
             return true;
@@ -92,26 +98,7 @@ class Auth
 
     public function register($name, $email, $password, $confirm_password)
     {
-        $name = trim($name);
-        $email = trim($email);
-
-        if (empty($name)) {
-            $this->errors['name'] = MESSAGE_NAME_EMPTY;
-        }
-        if (strlen($name) > 255) {
-            $this->errors['name'] = MESSAGE_NAME_BAD_LENGTH;
-        }
-
-        if (empty($email) || $email === null) {
-            $this->errors['email'] = MESSAGE_EMAIL_EMPTY;
-            $email = null;
-        }
-        if (strlen($email) > 255) {
-            $this->errors['email'] = MESSAGE_EMAIL_TOO_LONG;
-        }
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->errors['email'] = MESSAGE_EMAIL_INVALID;
-        }
+        list($name, $email) = BaseController::validateUserInput($name, $email);
 
         if (empty($password) || empty($confirm_password)) {
             $this->errors['password'] = MESSAGE_PASSWORD_EMPTY;
@@ -124,7 +111,7 @@ class Auth
         }
 
         if (self::databaseConnection() && empty($this->errors)) {
-            if ($queryCheckUser = $this->dbConnection->prepare("SELECT email FROM users WHERE email=?")) {
+            if ($queryCheckUser = $this->dbConnection->prepare('SELECT email FROM users WHERE email=?')) {
                 $queryCheckUser->bind_param('s', $email);
                 $queryCheckUser->execute();
                 $result = $queryCheckUser->fetch();
@@ -134,10 +121,11 @@ class Auth
                     return false;
                 } else {
                     $passHash = password_hash($password, PASSWORD_BCRYPT);
+                    ($email === 'alexander.stoimenov@outlook.com') ? $role = 'admin' : $role = '';
                     if ($queryInsertUser =
-                        $this->dbConnection->prepare("INSERT INTO users (name, email, password) VALUES (?,?,?)")
+                        $this->dbConnection->prepare('INSERT INTO users (name, email, password, role) VALUES (?,?,?,?)')
                     ) {
-                        $queryInsertUser->bind_param('sss', $name, $email, $passHash);
+                        $queryInsertUser->bind_param('ssss', $name, $email, $passHash, $role);
                         $queryInsertUser->execute();
 
                         return true;

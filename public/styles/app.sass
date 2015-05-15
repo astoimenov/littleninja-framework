@@ -4,12 +4,24 @@
 
 body
   padding-top: 60px
+  color: azure
+
+  .select2-container
+    color: #2B3E50 !important
+
+  .disabled
+    a
+      pointer-events: none
+      touch-action: none
 
   h1, h2, h3
-    font-family: BebasNeue, "Helvetica Neue", Helvetica, sans-serif
+    font-family: BebasNeue, 'Helvetica Neue', Helvetica, sans-serif
     letter-spacing: 2px
 
-  h1, h2
+  h1
+    margin-top: 0
+
+  h2
     margin-top: 12px
 
   h3
@@ -29,8 +41,24 @@ body
       margin-bottom: 5px
       padding: 5px
 
+      #tag_list
+        display: inline-block
+        list-style-type: none
+
+        li
+          display: inline-block
+          margin-right: 10px
+
+      &#sidebar
+
+        .tags
+          list-style-type: none
+
     th, td
       text-align: center
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice
+      color: #BF5A16 !important
 
   footer
     background-color: #2B3E50

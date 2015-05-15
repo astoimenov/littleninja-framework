@@ -1,12 +1,14 @@
 <?php namespace LittleNinja\Models;
 
 use LittleNinja\Lib\Database;
+use LittleNinja\Lib\View;
 
 class BaseModel
 {
     protected $table;
     protected $limit;
     protected $db;
+    public $dbError;
 
     public function __construct($args = array())
     {
@@ -57,10 +59,15 @@ class BaseModel
             $query .= " LIMIT {$limit}";
         }
 
-        $resultSet = $this->db->query($query);
-        $results = self::processResults($resultSet);
+        if ($resultSet = $this->db->query($query)) {
+            $results = self::processResults($resultSet);
 
-        return $results;
+            return $results;
+        } else {
+            $this->reportDbError();
+
+            return false;
+        }
     }
 
     protected function processResults($resultSet)
@@ -81,7 +88,7 @@ class BaseModel
         $keys = array_keys($element);
         $values = array();
         foreach ($element as $key => $value) {
-            $values[] = "'" . $this->db->real_escape_string($value) . "'";
+            $values[] = "'" . $this->db->real_escape_string(trim($value)) . "'";
         }
 
         $keys = implode($keys, ',');
@@ -89,10 +96,11 @@ class BaseModel
         $query = "INSERT INTO {$this->table}($keys) VALUES($values)";
 
         if ($this->db->query($query)) {
-            return $this->db->affected_rows;
+            return $this->db->insert_id;
         } else {
-            var_dump($this->db->error);
-            die;
+            $this->reportDbError();
+
+            return false;
         }
     }
 
@@ -113,26 +121,42 @@ class BaseModel
 
         $query = rtrim($query, ',');
         $query .= " WHERE id = {$element['id']}";
-        $this->db->query($query);
 
-        return $this->db->affected_rows;
+        if ($this->db->query($query)) {
+            return $this->db->affected_rows;
+        } else {
+            $this->reportDbError();
+
+            return false;
+        }
     }
 
     public function destroy($id)
     {
         $query = "DELETE FROM {$this->table} WHERE id = {$id}";
+
         if ($this->db->query($query)) {
             return $this->db->affected_rows;
         } else {
-            var_dump($this->db->error);
-            die;
+            $this->reportDbError();
+
+            return false;
         }
     }
 
-    public function getByName($name)
+    protected function reportDbError()
     {
-        return $this->get(array(
-            'where' => "name = '" . $name . "'"
-        ));
+        var_dump($this->db->error);
+        exit;
+
+        /*error_reporting(E_USER_WARNING);
+        error_log(
+            '[' . date("F j, Y, g:i a e O") . ']' . $this->db->error . PHP_EOL,
+            3,
+            LN_ROOT_DIR . '\logs\db-errors.log'
+        );
+
+        View::render('errors/db');
+        exit;*/
     }
 }

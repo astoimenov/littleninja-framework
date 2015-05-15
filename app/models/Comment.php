@@ -9,8 +9,8 @@ class Comment extends BaseModel
 
     public function getByPostId($id)
     {
-        $query = "SELECT comments.id,content,visitor_name,users.name FROM comments "
-            . "LEFT JOIN users ON users_id=users.id WHERE blog_posts_id = '{$id}' ";
+        $query = "SELECT comments.id, content, visitor_name, users.name FROM comments "
+            . "LEFT JOIN users ON user_id=users.id WHERE blog_post_id = '{$id}' ";
 
 
         if ($resultSet = $this->db->query($query)) {
@@ -18,8 +18,9 @@ class Comment extends BaseModel
 
             return $results;
         } else {
-            var_dump($this->db->error);
-            die;
+            self::reportDbError();
+
+            return false;
         }
     }
 }

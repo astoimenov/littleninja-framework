@@ -18,7 +18,7 @@
                 <td><?= $post['id'] ?></td>
                 <td><?= $post['title'] ?></td>
                 <td><?= $post['slug'] ?></td>
-                <td><?= $post['content'] ?></td>
+                <td><?= $this->limit($post['content']) ?></td>
                 <td><?= $post['created_at'] ?></td>
                 <td>
                     <a href="/posts/edit/<?= $post['slug'] ?>" class="btn btn-default glyphicon glyphicon-edit"></a>

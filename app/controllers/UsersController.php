@@ -18,39 +18,61 @@ class UsersController extends BaseController
     public function index()
     {
         $this->isAdmin();
+        $this->title = 'Users | ' . LN_SITE_NAME;
 
-        $users = $this->userModel->get();
+        $users = $this->userModel->get(array(
+            'columns' => 'id, name, email, role'
+        ));
 
         View::render('users/index', $users);
     }
 
     public function edit($id)
     {
-        if ($this->loggedUser['role'] === 'admin' || $this->loggedUser['id'] == $id) {
-            $user = $this->userModel->getById($id);
+        $this->isAdmin();
+        $this->title = 'Edit user | ' . LN_SITE_NAME;
 
-            View::render('users/edit', $user);
-        } else {
-            Redirect::home();
-        }
+        $user = $this->userModel->getById($id);
+
+        View::render('users/edit', $user);
+    }
+
+    public function myprofile()
+    {
+        $this->title = 'My profile | ' . LN_SITE_NAME;
+
+        $id = $this->loggedUser['id'];
+        $user = $this->userModel->getById($id);
+
+        View::render('users/edit', $user);
     }
 
     public function update($id)
     {
-        $this->isAdmin();
-
-        if ($this->checkCsrfToken()) {
+        if ($this->loggedUser['role'] === 'admin' || $this->loggedUser['id'] == $id) {
             $user['id'] = $id;
-            $user['name'] = htmlspecialchars($_POST['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $user['email'] = htmlspecialchars($_POST['email'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $user['role'] = $_POST['role'];
+            $user['name'] = self::sanitize($_POST['name']);
+            $user['email'] = self::sanitize($_POST['email']);
+            if ($this->loggedUser['role'] === 'admin') {
+                $user['role'] = $_POST['role'];
+            }
 
-            $this->userModel->update($user);
+            if ($this->checkCsrfToken() && empty($this->errors)) {
+                if ($this->userModel->update($user)) {
+                    Redirect::home();
+                } else {
+                    $user['errors'] = $this->userModel->errors;
 
-            Redirect::to('/users/index');
+                    View::render('users/edit', $user);
+                }
+            } else {
+                $user['errors'] = $this->errors;
+
+                View::render('users/edit', $user);
+            }
+        } else {
+            Redirect::home();
         }
-
-        Redirect::home();
     }
 
     public function delete($id)

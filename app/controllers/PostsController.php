@@ -3,8 +3,11 @@
 use Carbon\Carbon;
 use LittleNinja\Lib\Redirect;
 use LittleNinja\Lib\View;
+use LittleNinja\Models\BaseModel;
+use LittleNinja\Models\BlogPostsTags;
 use LittleNinja\Models\Comment;
 use LittleNinja\Models\Post;
+use LittleNinja\Models\Tag;
 use Stringy\Stringy;
 
 class PostsController extends BaseController
@@ -19,6 +22,7 @@ class PostsController extends BaseController
     public function index()
     {
         $this->isAdmin();
+        $this->title = 'Posts | ' . LN_SITE_NAME;
 
         $postModel = new Post();
         $posts = $postModel->get();
@@ -29,8 +33,12 @@ class PostsController extends BaseController
     public function create()
     {
         $this->isAdmin();
+        $this->title = 'Create post | ' . LN_SITE_NAME;
 
-        View::render('posts/create');
+        $tagModel = new Tag();
+        $tags = $tagModel->get();
+
+        View::render('posts/create', $tags);
     }
 
     public function store()
@@ -45,13 +53,15 @@ class PostsController extends BaseController
         }
 
         if (empty($this->errors) && $this->checkCsrfToken()) {
-            $post['title'] = htmlspecialchars($_POST['title'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $post['title'] = self::sanitize($_POST['title']);
             $post['slug'] = Stringy::create($post['title'])->slugify('-');
-            $post['content'] = htmlspecialchars($_POST['content'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $post['users_id'] = $this->loggedUser['id'];
-            $post['created_at'] = Carbon::now()->timezone('Europe/Sofia');
-            $postModel = new Post();
-            $postModel->store($post);
+            $post['content'] = nl2br(self::sanitize($_POST['content']));
+            $post['user_id'] = $this->loggedUser['id'];
+            $post['created_at'] = Carbon::now();
+
+            $tags = $_POST['tags'];
+            $postTagModel = new BlogPostsTags();
+            $postTagModel->storePostTags($post, $tags);
 
             Redirect::to('/home/index');
         }
@@ -63,6 +73,11 @@ class PostsController extends BaseController
     {
         $postModel = new Post();
         $post = $postModel->getBySlug($slug)[0];
+        $this->title = $post['title'] . ' | ' . LN_SITE_NAME;
+
+        $postTagModel = new BlogPostsTags();
+        $tags = $postTagModel->getTags($post['id']);
+        $post['tags'] = $tags;
 
         $commentModel = new Comment();
         $post['comments'] = $commentModel->getByPostId($post['id']);
@@ -73,9 +88,14 @@ class PostsController extends BaseController
     public function edit($slug)
     {
         $this->isAdmin();
+        $this->title = 'Edit post | ' . LN_SITE_NAME;
 
         $postModel = new Post();
         $post = $postModel->getBySlug($slug)[0];
+
+        $postTagModel = new BlogPostsTags();
+        $tags = $postTagModel->getTags($post['id']);
+        $post['tags'] = $tags;
 
         View::render('posts/edit', $post);
     }
@@ -86,8 +106,8 @@ class PostsController extends BaseController
 
         if ($this->checkCsrfToken()) {
             $post['id'] = $id;
-            $post['title'] = htmlspecialchars($_POST['title'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $post['content'] = htmlspecialchars($_POST['content'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $post['title'] = self::sanitize($_POST['title']);
+            $post['content'] = self::sanitize($_POST['content']);
 
             $postModel = new Post();
             $postModel->update($post);
