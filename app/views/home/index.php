@@ -12,7 +12,7 @@
 
         echo "\n<article class='row' id='post-{$post['id']}'>
         <div class='row'>
-            <h3 class='col-sm-10'>
+            <h3 class='col-sm-12'>
                 <a class='second after before' href='/posts/show/{$post['slug']}'>{$post['title']}</a>
             </h3>
 
@@ -25,10 +25,10 @@
 
     <ul class="pager">
         <li class="previous <?= $this->disabledPrev ? 'disabled' : '' ?>">
-            <a href="/home/index/<?= $this->prev ?>"><span aria-hidden="true">&larr;</span> Newer</a>
+            <a href="/home/index/<?= $this->prev ?>"><span aria-hidden="true"><</span> Newer</a>
         </li>
         <li class="next <?= $this->disabledNext ? 'disabled' : '' ?>">
-            <a href="/home/index/<?= $this->next ?>">Older <span aria-hidden="true">&rarr;</span></a>
+            <a href="/home/index/<?= $this->next ?>">Older <span aria-hidden="true">/></span></a>
         </li>
     </ul>
 </section>

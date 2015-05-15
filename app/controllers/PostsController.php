@@ -45,7 +45,7 @@ class PostsController extends BaseController
     {
         $this->isAdmin();
 
-        if (strlen($_POST['title']) < 3) {
+        if (strlen($_POST['title']) < 3 || mb_strlen($_POST['title']) > 45) {
             $this->errors['title'] = MESSAGE_TITLE_BAD_LENGTH;
         }
         if (strlen($_POST['content']) < 3) {

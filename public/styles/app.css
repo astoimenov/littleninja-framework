@@ -4,6 +4,10 @@
 body {
   padding-top: 60px;
   color: azure; }
+  body ::selection {
+    background: #BF5A16; }
+  body ::-moz-selection {
+    background: #BF5A16; }
   body .select2-container {
     color: #2B3E50 !important; }
   body .disabled a {
