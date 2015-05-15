@@ -36,6 +36,7 @@
     <link rel="stylesheet" href="../../../styles/underline.css"/>
     <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet"/>
     <script src="//tinymce.cachefly.net/4.1/tinymce.min.js"></script>
+    <link type="text/css" href="../../../styles/jquery.jscrollpane.css" rel="stylesheet" media="all"/>
     <script>
         tinymce.init({
             plugins: 'link, image',
@@ -45,7 +46,8 @@
     </script>
 </head>
 <body>
-    <header>
-        <?php include_once 'navigation.php'; ?>
-    </header>
-    <main id="main" class="container">
+    <div id="wrapper">
+        <header>
+            <?php include_once 'navigation.php'; ?>
+        </header>
+        <main id="main" class="container">
