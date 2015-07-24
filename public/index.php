@@ -11,3 +11,5 @@ include_once '../config/db.php';
 include_once '../config/messages.php';
 
 Router::router();
+$dotenv = new Dotenv\Dotenv(__DIR__);
+$dotenv->load();
